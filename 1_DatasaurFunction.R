@@ -71,7 +71,7 @@ datasaur <- function(dino_name){
     group_by(Series, Detail) %>% 
     summarize(cor = cor(value_act, value_cod, use="pairwise.complete.obs")) %>% 
     ungroup() %>% 
-    filter(cor > (max(cor, na.rm)/1.5)) %>% 
+    filter(cor >= (max(cor, na.rm=T)/1.5)) %>% 
     arrange(desc(cor)) %>% 
     top_n(10, cor) %>% 
     sample_n(1)
