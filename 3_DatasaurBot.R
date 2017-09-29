@@ -58,12 +58,13 @@ if(nchar(datasaur_text) < 125){
   dname <- paste0("#", strsplit(dino_name, " ")[[1]])
   dname <- ifelse(nchar(dname) < 15, dname, "")
   
-  dino_hashes <- c(rep("#rstats", 5), 
+  dino_hashes <- c(rep("#rstats", 1), 
                    rep("#dinosaurs", 5), rep("#dinos", 2), 
-                   rep("#dataviz", 11), rep("#ggplot", 3),
+                   rep("#dataviz", 8), rep("#dataisbeautiful", 2), 
+                   rep("#ggplot", 1),
                    rep("#correlation", 2), rep("#causation", 2),
-                   rep("#science", 2), 
-                   rep("", 4), rep(dname, 1))
+                   rep("#science", 3),
+                   rep("", 4), rep(dname, 4))
   
   datasaur_text <- paste(datasaur_text, sample(dino_hashes, 1))
 }
