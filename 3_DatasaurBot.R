@@ -62,9 +62,13 @@ if(nchar(datasaur_text) < 125){
                    rep("#dinosaurs", 5), rep("#dinos", 2), 
                    rep("#dataviz", 8), rep("#dataisbeautiful", 2), 
                    rep("#ggplot", 1),
-                   rep("#correlation", 2), rep("#causation", 2),
                    rep("#science", 3),
                    rep("", 4), rep(dname, 4))
+  
+  if(weekdays(Sys.Date()) == "Friday"){
+    dino_hashes <- c(rep("#FossilFriday", 3), 
+                     rep("", 1))
+  }
   
   datasaur_text <- paste(datasaur_text, sample(dino_hashes, 1))
 }
