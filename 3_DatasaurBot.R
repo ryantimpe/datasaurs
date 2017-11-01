@@ -8,7 +8,7 @@ library(lubridate);
 library(scales); library(zoo);
 library(twitteR);
 
-setwd("F:\\__RT Docs\\Dino8")
+setwd("C:\Users\Ryan\Documents\808Projects\Datasaurs")
 
 source("1_DatasaurFunction.R")
 
