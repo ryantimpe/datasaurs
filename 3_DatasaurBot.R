@@ -66,10 +66,14 @@ if(nchar(datasaur_text) < 125){
                    rep("", 4), rep(dname, 4))
   
   if(weekdays(Sys.Date()) == "Friday"){
-    dino_hashes <- c(rep("#FossilFriday", 3), 
-                     rep("", 1))
+    dino_hashes <- c(rep("#FossilFriday", 100), #Very High Chance of #FossilFriday 
+                     dino_hashes)
   }
   
+  if(months.Date(Sys.Date()) == "November"){
+    dino_hashes <- c(rep("#Dinovember", 50), #High chance of #Dinovermber
+                     dino_hashes)
+  }
   datasaur_text <- paste(datasaur_text, sample(dino_hashes, 1))
 }
 
