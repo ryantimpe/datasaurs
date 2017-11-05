@@ -71,7 +71,7 @@ if(nchar(datasaur_text) < 125){
   }
   
   if(months.Date(Sys.Date()) == "November"){
-    dino_hashes <- c(rep("#Dinovember", 50), #High chance of #Dinovermber
+    dino_hashes <- c(rep("#Dinovember", 50), #High chance of #Dinovember
                      dino_hashes)
   }
   datasaur_text <- paste(datasaur_text, sample(dino_hashes, 1))

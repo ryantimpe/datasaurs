@@ -81,7 +81,9 @@ datasaur <- function(dino_name){
     left_join(cod_all %>% filter(Series == as.character(corrs[1, "Series"]),
                                  Detail == as.character(corrs[1, "Detail"]))) %>% 
     #Want the CoD time series to be on same scale as dino line
-    mutate(value_cod_scaled = rescale(value_cod, c(min(value_act, na.rm=T)+25, max(value_act, na.rm=T)+25))) %>% 
+    # But only for x where there is both a dino and a CoD line
+    mutate(value_cod_scaled = rescale(value_cod, c(min(value_act[!is.na(.$value_cod)], na.rm=T)+25,
+                                                   max(value_act[!is.na(.$value_cod)], na.rm=T)+25))) %>% 
     select(-value_cod) %>% 
     rename(value_cod = value_cod_scaled) %>% 
     group_by(Year, Month) %>% 
