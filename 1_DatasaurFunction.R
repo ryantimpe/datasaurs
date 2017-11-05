@@ -208,7 +208,7 @@ datasaur <- function(dino_name){
   #TODO: clean this
   xlabs <- dino_cor %>% 
     filter(Line == "value_act") %>% 
-    mutate(YM = ifelse(row_number() %% 52 != 0, NA, paste0(Year, " M", Month))) %>% 
+    mutate(YM = ifelse(Year == lag(Year), NA, paste0(Year, " M", Month))) %>% 
     select(x, YM) %>% 
     filter(!is.na(YM))
   
@@ -226,7 +226,7 @@ datasaur <- function(dino_name){
     scale_x_continuous(labels = xlabs$YM, breaks = xlabs$x, name = NULL) +
     labs(title = paste0(dino_name),
          caption = paste(dino_name, "by", as.character(info$Credit[1]), 
-                         "| Cause of death data from CDC.gov", "\n", "@Datasaurs v0.1.1")) +
+                         "| Cause of death data from CDC.gov", "\n", "@Datasaurs v0.1.2")) +
     theme_minimal()+
     theme(legend.position = "none",
           panel.grid.major.y = element_blank(),
