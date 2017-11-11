@@ -40,7 +40,7 @@ setup_twitter_oauth(consumer_key = api_keys$consumer_key,
                     access_secret = api_keys$access_secret)
 
 #Save Datasaur
-datasaur_filepath <- paste0("BotRuns/v0p1 ", substr(Sys.time(), 1, 13),".png")
+datasaur_filepath <- paste0("BotRuns/v0p2 ", substr(Sys.time(), 1, 13),".png")
 ggsave(filename = datasaur_filepath, plot = datasaur_run[[1]])
 
 datasaur_text <- paste0(dino_name, ": ", round(datasaur_run[[4]], 2), " correlation with US deaths from ", datasaur_run[[2]], " (", datasaur_run[[3]], ")")

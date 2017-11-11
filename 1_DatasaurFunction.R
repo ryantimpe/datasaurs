@@ -20,6 +20,7 @@ wrapper <- function(x, ...) {paste(strwrap(x, ...), collapse = "\n")}
 ###
 # Datasaur Function
 ###
+
 datasaur <- function(dino_name){
   dino_raw <- readPNG(paste0("PhyloPic/", dino_name,".png"))
   
@@ -182,7 +183,7 @@ datasaur <- function(dino_name){
     distinct() %>% 
     filter(!is.na(y)) %>% 
     mutate(Chart = ifelse(Line == "value_act", " Original", "Datasaur"))
-  
+
   #Minimum Y for additional overwrites
   min_cod_y <- dino_cor %>% 
     filter(Line == "value_cod")
@@ -194,15 +195,54 @@ datasaur <- function(dino_name){
                 filter((Line == "value_act" & y < min_cod_y)) %>%
                 mutate(Line = "value_cod", Chart = "Datasaur")) %>%
     arrange(x, Line, desc(y))
-
+  
+  
+  #New Color options
+  sel_greens <- sample(greens, 2) #I like #108070 malachite
+  
+  color_radius <- sample(seq(20, 125, 5), 1)
+  
+  wghts <- rnorm(2, 100, 20)
+  wghts <- wghts / sum(wghts)
+  
+  dino_silho4 <- dino_silho3 %>% 
+    select(Line, Chart, x, y) %>% 
+    mutate(x_cat = x %/% color_radius + 1,
+           y_cat = y %/% color_radius + 1) %>% 
+    group_by(Line, Chart, x_cat, y_cat) %>% 
+    mutate(x_rank = rank(x), y_rank = rank(y)) %>% 
+    mutate(x_val = abs(x_rank - median(x_rank)),
+           y_val = abs(y_rank - median(y_rank))) %>% 
+    mutate(x_wght = x_val / max(x_val),
+           y_wght = y_val / max(y_val)) %>% 
+    mutate(weight = wghts[1] * (x_wght + y_wght),
+           weight = ifelse(is.nan(weight), 1, weight)) %>% 
+    ungroup()
+  
+  # possible_x <- unique(dino_silho4$x_cat)
+  # possible_y <- unique(dino_silho4$y_cat)
+    
+  fade_y <- runif(1, min = 0, max = 3)
+  #Select green based on weight
+  dino_silho5 <- dino_silho4 %>% 
+    group_by(x_cat) %>% 
+    mutate(y_prob = (y / max(y, na.rm=T))^fade_y,
+           weight = weight * y_prob) %>% 
+    mutate(weight = ifelse(weight > 1, 1, weight)) %>% 
+    ungroup() %>% 
+    rowwise() %>%
+    mutate(color = ifelse(
+      Chart == "Datasaur",  sample(sel_greens, 1, prob = c(weight, 1- weight)),
+      "#CCCCCC"
+    )) %>% 
+    ungroup()
+  
   #Place holder for additional edits
   dino_cor2 <- dino_cor 
   
   ###
   #PLOT!
   ###
-
-  sel_green <- sample(greens, 1) #I like #108070 malachite
 
   #Annual X labels... 
   #TODO: clean this
@@ -213,10 +253,11 @@ datasaur <- function(dino_name){
     filter(!is.na(YM))
   
   chart <- ggplot(dino_cor2, aes(x = x, y = value, group=Line, color=Line)) + 
-    geom_raster(data=dino_silho3, aes(x=x, y=y, fill=Chart))+
+    geom_raster(data=dino_silho5, aes(x=x, y=y, fill=color))+
     geom_line(size = 1.5) +
-    scale_color_manual(values = c("value_cod" = "#FC3D32", "value_act" = sel_green)) +
-    scale_fill_manual(values = c(" Original" = "#CCCCCC", "Datasaur" = sel_green)) +
+    scale_color_manual(values = c("value_cod" = "#FC3D32", "value_act" = sel_greens[1])) +
+    scale_fill_identity() +
+    # scale_fill_manual(values = c(" Original" = "#CCCCCC", "Datasaur" = sel_greens[1])) +
     coord_equal() +
     facet_grid(Chart ~.) +
     scale_y_continuous(limits=c(0, NA), breaks = NULL, 
@@ -226,7 +267,7 @@ datasaur <- function(dino_name){
     scale_x_continuous(labels = xlabs$YM, breaks = xlabs$x, name = NULL) +
     labs(title = paste0(dino_name),
          caption = paste(dino_name, "by", as.character(info$Credit[1]), 
-                         "| Cause of death data from CDC.gov", "\n", "@Datasaurs v0.1.2")) +
+                         "| Cause of death data from CDC.gov", "\n", "@Datasaurs v0.2.0")) +
     theme_minimal()+
     theme(legend.position = "none",
           panel.grid.major.y = element_blank(),
