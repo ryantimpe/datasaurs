@@ -213,6 +213,9 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green"){
     sample_n(1) %>% 
     as.character()
   
+  #Randomize color order
+  sel_color <- sample(sel_color, 2)
+  
   color_radius <- sample(seq(20, 125, 5), 1)
   
   wghts <- rnorm(2, 100, 20)
