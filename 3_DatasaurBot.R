@@ -13,8 +13,7 @@ setwd("C:\Users\Ryan\Documents\808Projects\Datasaurs")
 source("1_DatasaurFunction.R")
 
 cod_all <- readRDS("BotInputs/CauseOfDeath.RDS")
-greens <- read.csv("BotInputs/Greens.csv", stringsAsFactors = F)
-greens <- greens$Greens
+colorChoices <- read.csv("BotInputs/Colors.csv", stringsAsFactors = F)
 
 dino_info <- read.csv("BotInputs/DatasaurList.csv", stringsAsFactors = F)
 
@@ -22,10 +21,23 @@ dino_info <- read.csv("BotInputs/DatasaurList.csv", stringsAsFactors = F)
 # Make a datasaur
 ###
 
+#Choose the animal
 dino_list <- gsub(".png", "", list.files("PhyloPic/"))
 dino_name <- sample(dino_list, 1)
 
-datasaur_run <- datasaur(dino_name)
+#Color! Default is green on green.
+col1 <- "Green"
+col2 <- "Green"
+
+holidatasaur <- FALSE
+if(months.Date(Sys.Date()) == "December"){
+  holidatasaur <- sample(c(TRUE, FALSE), 1, prob = c(0.2, 0.8))
+  if(holidatasaur){
+    col2 <- "Red"
+  }
+}
+
+datasaur_run <- datasaur(dino_name, col1 = col1, col2 = col2)
 
 ####
 # Tweet it
@@ -74,7 +86,10 @@ if(nchar(datasaur_text) < 125){
     dino_hashes <- c(rep("#Dinovember", 50), #High chance of #Dinovember
                      dino_hashes)
   }
-  datasaur_text <- paste(datasaur_text, sample(dino_hashes, 1))
+  
+  datasaur_text <- paste(datasaur_text, 
+                         sample(dino_hashes, 1),
+                         if(holidatasaur){"#Holidatasaur"}) #SHould be fine bc have more than 140 char now
 }
 
 updateStatus(datasaur_text, mediaPath = datasaur_filepath, 

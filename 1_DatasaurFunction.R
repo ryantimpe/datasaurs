@@ -9,8 +9,7 @@ library(scales)
 library(zoo)
 
 cod_all <- readRDS("BotInputs/CauseOfDeath.RDS")
-greens <- read.csv("BotInputs/Greens.csv", stringsAsFactors = F)
-greens <- greens$Greens
+colorChoices <- read.csv("BotInputs/Colors.csv", stringsAsFactors = F)
 
 dino_info <- read.csv("BotInputs/DatasaurList.csv", stringsAsFactors = F)
 
@@ -21,7 +20,7 @@ wrapper <- function(x, ...) {paste(strwrap(x, ...), collapse = "\n")}
 # Datasaur Function
 ###
 
-datasaur <- function(dino_name){
+datasaur <- function(dino_name, col1 = "Green", col2 = "Green"){
   dino_raw <- readPNG(paste0("PhyloPic/", dino_name,".png"))
   
   dino <- dino_raw[, , 4] #Only need the transparency matrix
@@ -197,8 +196,22 @@ datasaur <- function(dino_name){
     arrange(x, Line, desc(y))
   
   
+  ###
   #New Color options
-  sel_greens <- sample(greens, 2) #I like #108070 malachite
+  ###
+  sel_color <- c()
+  sel_color[1] <- colorChoices %>% 
+    filter(Category == col1) %>% 
+    select(Shade) %>% 
+    sample_n(1) %>% 
+    as.character()
+  
+  sel_color[2] <- colorChoices %>% 
+    filter(Category == col2) %>% 
+    filter(Shade != sel_color[1]) %>% 
+    select(Shade) %>% 
+    sample_n(1) %>% 
+    as.character()
   
   color_radius <- sample(seq(20, 125, 5), 1)
   
@@ -232,7 +245,7 @@ datasaur <- function(dino_name){
     ungroup() %>% 
     rowwise() %>%
     mutate(color = ifelse(
-      Chart == "Datasaur",  sample(sel_greens, 1, prob = c(weight, 1- weight)),
+      Chart == "Datasaur",  sample(sel_color, 1, prob = c(weight, 1- weight)),
       "#CCCCCC"
     )) %>% 
     ungroup()
@@ -255,9 +268,8 @@ datasaur <- function(dino_name){
   chart <- ggplot(dino_cor2, aes(x = x, y = value, group=Line, color=Line)) + 
     geom_raster(data=dino_silho5, aes(x=x, y=y, fill=color))+
     geom_line(size = 1.5) +
-    scale_color_manual(values = c("value_cod" = "#FC3D32", "value_act" = sel_greens[1])) +
+    scale_color_manual(values = c("value_cod" = "#FC3D32", "value_act" = sel_color[1])) +
     scale_fill_identity() +
-    # scale_fill_manual(values = c(" Original" = "#CCCCCC", "Datasaur" = sel_greens[1])) +
     coord_equal() +
     facet_grid(Chart ~.) +
     scale_y_continuous(limits=c(0, NA), breaks = NULL, 
@@ -267,7 +279,7 @@ datasaur <- function(dino_name){
     scale_x_continuous(labels = xlabs$YM, breaks = xlabs$x, name = NULL) +
     labs(title = paste0(dino_name),
          caption = paste(dino_name, "by", as.character(info$Credit[1]), 
-                         "| Cause of death data from CDC.gov", "\n", "@Datasaurs v0.2.0")) +
+                         "| Cause of death data from CDC.gov", "\n", "@Datasaurs v0.2.1")) +
     theme_minimal()+
     theme(legend.position = "none",
           panel.grid.major.y = element_blank(),
@@ -291,4 +303,3 @@ datasaur <- function(dino_name){
   return(datasaur.list)
   
 }
-
