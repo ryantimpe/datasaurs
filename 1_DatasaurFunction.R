@@ -16,6 +16,25 @@ dino_info <- read.csv("BotInputs/DatasaurList.csv", stringsAsFactors = F)
 #Text wrapping function
 wrapper <- function(x, ...) {paste(strwrap(x, ...), collapse = "\n")}
 
+#Color conversion function
+convert_color_values <- function(hex_color){
+  red <-  as.numeric(as.hexmode(substr(hex_color, 2, 3)))/255
+  grn <-  as.numeric(as.hexmode(substr(hex_color, 4, 5)))/255
+  blu <-  as.numeric(as.hexmode(substr(hex_color, 6, 7)))/255
+  
+  return(c(red, grn, blu))
+}
+merge_colors <- function(c1, c2, w1 = 0.5){
+  red <- as.hexmode(round((w1*c1[1] + (1-w1)*c2[1])*255))
+  if(nchar(red) == 1){ red <- paste0("0", red)}
+  grn <- as.hexmode(round((w1*c1[2] + (1-w1)*c2[2])*255))
+  if(nchar(grn) == 1){ grn <- paste0("0", grn)}
+  blu <- as.hexmode(round((w1*c1[3] + (1-w1)*c2[3])*255))
+  if(nchar(blu) == 1){ blu <- paste0("0", blu)}
+  
+  return(paste0("#", red, grn, blu))
+}
+
 ###
 # Datasaur Function
 ###
@@ -215,7 +234,8 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green"){
   
   #Randomize color order
   sel_color <- sample(sel_color, 2)
-  
+  # sel_color_values <- lapply(sel_color, convert_color_values)
+
   color_radius <- sample(seq(20, 125, 5), 1)
   
   wghts <- rnorm(2, 100, 20)
@@ -234,24 +254,36 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green"){
     mutate(weight = wghts[1] * (x_wght + y_wght),
            weight = ifelse(is.nan(weight), 1, weight)) %>% 
     ungroup()
-  
-  # possible_x <- unique(dino_silho4$x_cat)
-  # possible_y <- unique(dino_silho4$y_cat)
-    
+
   fade_y <- runif(1, min = 0, max = 3)
+  
   #Select green based on weight
-  dino_silho5 <- dino_silho4 %>% 
-    group_by(x_cat) %>% 
+  dino_silho5 <- dino_silho4 %>%
+    group_by(x_cat) %>%
     mutate(y_prob = (y / max(y, na.rm=T))^fade_y,
-           weight = weight * y_prob) %>% 
-    mutate(weight = ifelse(weight > 1, 1, weight)) %>% 
-    ungroup() %>% 
+           weight = weight * y_prob) %>%
+    mutate(weight = ifelse(weight > 1, 1, weight)) %>%
+    ungroup() %>%
     rowwise() %>%
     mutate(color = ifelse(
       Chart == "Datasaur",  sample(sel_color, 1, prob = c(weight, 1- weight)),
       "#CCCCCC"
-    )) %>% 
+    )) %>%
     ungroup()
+  
+  # #Average colors for a dfade rather than picking one
+  # dino_silho5 <- dino_silho4 %>% 
+  #   group_by(x_cat) %>% 
+  #   mutate(y_prob = (y / max(y, na.rm=T))^fade_y,
+  #          weight = weight * y_prob) %>% 
+  #   mutate(weight = ifelse(weight > 1, 1, weight)) %>% 
+  #   ungroup() %>% 
+  #   rowwise() %>%
+  #   mutate(color = ifelse(
+  #     Chart == "Datasaur",  merge_colors(sel_color_values[[1]], sel_color_values[[2]], w1 = weight),
+  #     "#CCCCCC"
+  #   )) %>% 
+  #   ungroup()
   
   #Place holder for additional edits
   dino_cor2 <- dino_cor 
@@ -306,3 +338,4 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green"){
   return(datasaur.list)
   
 }
+
