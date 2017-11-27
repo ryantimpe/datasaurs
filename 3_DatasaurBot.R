@@ -29,15 +29,20 @@ dino_name <- sample(dino_list, 1)
 col1 <- "Green"
 col2 <- "Green"
 
+#Pattern! Default is spotted
+pattern <- sample(c("spotted", "striped"), 1, prob = c(0.8, 0.2))
+
+#If December, allow for Holidatasaurs!
 holidatasaur <- FALSE
 if(months.Date(Sys.Date()) == "December"){
-  holidatasaur <- sample(c(TRUE, FALSE), 1, prob = c(0.2, 0.8))
+  holidatasaur <- sample(c(TRUE, FALSE), 1, prob = c(0.5, 0.5))
   if(holidatasaur){
     col2 <- "Red"
+    pattern <- sample(c("spotted", "striped"), 1, prob = c(0.1, 0.9))
   }
 }
 
-datasaur_run <- datasaur(dino_name, col1 = col1, col2 = col2)
+datasaur_run <- datasaur(dino_name, col1 = col1, col2 = col2, pattern = pattern)
 
 ####
 # Tweet it
@@ -55,7 +60,7 @@ setup_twitter_oauth(consumer_key = api_keys$consumer_key,
 datasaur_filepath <- paste0("BotRuns/v0p2 ", substr(Sys.time(), 1, 13),".png")
 ggsave(filename = datasaur_filepath, plot = datasaur_run[[1]])
 
-datasaur_text <- paste0(dino_name, ": ", round(datasaur_run[[4]], 2), " correlation with US deaths from ", datasaur_run[[2]], " (", datasaur_run[[3]], ")")
+datasaur_text <- paste0(dino_name, ": ", round(datasaur_run[[4]], 2), " correlation with US deaths from ", tolower(datasaur_run[[2]]), " (", datasaur_run[[3]], ")")
 
 #Clean up text a big
 datasaur_text <- gsub(", not elsewhere classified", "", datasaur_text)
@@ -72,10 +77,10 @@ if(nchar(datasaur_text) < 125){
   
   dino_hashes <- c(rep("#rstats", 1), 
                    rep("#dinosaurs", 5), rep("#dinos", 2), 
-                   rep("#dataviz", 8), rep("#dataisbeautiful", 2), 
+                   rep("#dataviz", 10), rep("#dataisbeautiful", 2), 
                    rep("#ggplot", 1),
                    rep("#science", 3),
-                   rep("", 4), rep(dname, 4))
+                   rep(dname, 6))
   
   if(weekdays(Sys.Date()) == "Friday"){
     dino_hashes <- c(rep("#FossilFriday", 100), #Very High Chance of #FossilFriday 
