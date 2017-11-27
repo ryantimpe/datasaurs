@@ -292,13 +292,34 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
   }
   if(pattern == "striped"){
     stripe_radius <- sample(seq(10, 50, 5), 1)
-    
-    stripe_direction <- sample(c(-1, 1), 1)
+
     stripe_direction <- runif(1, -2, 2) #Negatives slope up, <1 is flatter, >1 is steeper
-    
+
     dino_silho4 <- dino_silho3 %>% 
       select(Line, Chart, x, y) %>% 
       mutate(stripe_cat = (x + stripe_direction*y) %/% stripe_radius + 1) %>% 
+      mutate(stripe_rank = stripe_cat %% 2) %>%
+      mutate(color = case_when(
+        Chart == " Original" ~ "#CCCCCC",
+        stripe_rank == 0 ~ sel_color[1],
+        stripe_rank == 1 ~ sel_color[2],
+        TRUE ~ "#CCCCCC"
+      )) 
+    
+    dino_silho5 <- dino_silho4
+    
+  }
+  if(pattern == "geometric"){
+    stripe_radius <- sample(seq(80, 200, 5), 1)
+    
+    stripe_direction <- runif(1, -2, 2) 
+    
+    power_x <- sample(c(seq(1.2, 2, by=0.1), rep(2, 5)), 1)
+    power_y <- sample(c(rep(power_x, 10), seq(1.2, 2, by=0.1)), 1)
+    
+    dino_silho4 <- dino_silho3 %>% 
+      select(Line, Chart, x, y) %>% 
+      mutate(stripe_cat = (x^power_x + stripe_direction*y^power_y) %/% stripe_radius + 1) %>% 
       mutate(stripe_rank = stripe_cat %% 2) %>%
       mutate(color = case_when(
         Chart == " Original" ~ "#CCCCCC",
@@ -326,6 +347,7 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     mutate(YM = ifelse(Year == lag(Year), NA, paste0(Year, " M", Month))) %>% 
     select(x, YM) %>% 
     filter(!is.na(YM))
+  
   
   chart <- ggplot(dino_cor2, aes(x = x, y = value, group=Line, color=Line)) + 
     geom_raster(data=dino_silho5, aes(x=x, y=y, fill=color))+
