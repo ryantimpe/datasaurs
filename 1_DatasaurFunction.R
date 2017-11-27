@@ -39,7 +39,7 @@ merge_colors <- function(c1, c2, w1 = 0.5){
 # Datasaur Function
 ###
 
-datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "striped"){
+datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spotted"){
   dino_raw <- readPNG(paste0("PhyloPic/", dino_name,".png"))
   
   dino <- dino_raw[, , 4] #Only need the transparency matrix
