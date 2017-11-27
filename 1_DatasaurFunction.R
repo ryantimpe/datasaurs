@@ -39,7 +39,7 @@ merge_colors <- function(c1, c2, w1 = 0.5){
 # Datasaur Function
 ###
 
-datasaur <- function(dino_name, col1 = "Green", col2 = "Green"){
+datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "striped"){
   dino_raw <- readPNG(paste0("PhyloPic/", dino_name,".png"))
   
   dino <- dino_raw[, , 4] #Only need the transparency matrix
@@ -233,57 +233,84 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green"){
     as.character()
   
   #Randomize color order
-  sel_color <- sample(sel_color, 2)
+  #sel_color <- sample(sel_color, 2)
   # sel_color_values <- lapply(sel_color, convert_color_values)
+  
+  ##
+  # Spotted datasaur
+  ##
+  if(pattern == "spotted"){
+    
+    color_radius <- sample(seq(20, 125, 5), 1)
+    
+    wghts <- rnorm(2, 100, 20)
+    wghts <- wghts / sum(wghts)
+    
+    dino_silho4 <- dino_silho3 %>% 
+      select(Line, Chart, x, y) %>% 
+      mutate(x_cat = x %/% color_radius + 1,
+             y_cat = y %/% color_radius + 1) %>% 
+      group_by(Line, Chart, x_cat, y_cat) %>% 
+      mutate(x_rank = rank(x), y_rank = rank(y)) %>% 
+      mutate(x_val = abs(x_rank - median(x_rank)),
+             y_val = abs(y_rank - median(y_rank))) %>% 
+      mutate(x_wght = x_val / max(x_val),
+             y_wght = y_val / max(y_val)) %>% 
+      mutate(weight = wghts[1] * (x_wght + y_wght),
+             weight = ifelse(is.nan(weight), 1, weight)) %>% 
+      ungroup()
+    
+    fade_y <- runif(1, min = 0, max = 3)
+    
+    #Select green based on weight
+    dino_silho5 <- dino_silho4 %>%
+      group_by(x_cat) %>%
+      mutate(y_prob = (y / max(y, na.rm=T))^fade_y,
+             weight = weight * y_prob) %>%
+      mutate(weight = ifelse(weight > 1, 1, weight)) %>%
+      ungroup() %>%
+      rowwise() %>%
+      mutate(color = ifelse(
+        Chart == "Datasaur",  sample(sel_color, 1, prob = c(weight, 1- weight)),
+        "#CCCCCC"
+      )) %>%
+      ungroup()
+    
+    # #Average colors for a dfade rather than picking one
+    # dino_silho5 <- dino_silho4 %>% 
+    #   group_by(x_cat) %>% 
+    #   mutate(y_prob = (y / max(y, na.rm=T))^fade_y,
+    #          weight = weight * y_prob) %>% 
+    #   mutate(weight = ifelse(weight > 1, 1, weight)) %>% 
+    #   ungroup() %>% 
+    #   rowwise() %>%
+    #   mutate(color = ifelse(
+    #     Chart == "Datasaur",  merge_colors(sel_color_values[[1]], sel_color_values[[2]], w1 = weight),
+    #     "#CCCCCC"
+    #   )) %>% 
+    #   ungroup()
+  }
+  if(pattern == "striped"){
+    stripe_radius <- sample(seq(10, 50, 5), 1)
+    
+    stripe_direction <- sample(c(-1, 1), 1)
+    stripe_direction <- runif(1, -2, 2) #Negatives slope up, <1 is flatter, >1 is steeper
+    
+    dino_silho4 <- dino_silho3 %>% 
+      select(Line, Chart, x, y) %>% 
+      mutate(stripe_cat = (x + stripe_direction*y) %/% stripe_radius + 1) %>% 
+      mutate(stripe_rank = stripe_cat %% 2) %>%
+      mutate(color = case_when(
+        Chart == " Original" ~ "#CCCCCC",
+        stripe_rank == 0 ~ sel_color[1],
+        stripe_rank == 1 ~ sel_color[2],
+        TRUE ~ "#CCCCCC"
+      )) 
+    
+    dino_silho5 <- dino_silho4
+    
+  }
 
-  color_radius <- sample(seq(20, 125, 5), 1)
-  
-  wghts <- rnorm(2, 100, 20)
-  wghts <- wghts / sum(wghts)
-  
-  dino_silho4 <- dino_silho3 %>% 
-    select(Line, Chart, x, y) %>% 
-    mutate(x_cat = x %/% color_radius + 1,
-           y_cat = y %/% color_radius + 1) %>% 
-    group_by(Line, Chart, x_cat, y_cat) %>% 
-    mutate(x_rank = rank(x), y_rank = rank(y)) %>% 
-    mutate(x_val = abs(x_rank - median(x_rank)),
-           y_val = abs(y_rank - median(y_rank))) %>% 
-    mutate(x_wght = x_val / max(x_val),
-           y_wght = y_val / max(y_val)) %>% 
-    mutate(weight = wghts[1] * (x_wght + y_wght),
-           weight = ifelse(is.nan(weight), 1, weight)) %>% 
-    ungroup()
-
-  fade_y <- runif(1, min = 0, max = 3)
-  
-  #Select green based on weight
-  dino_silho5 <- dino_silho4 %>%
-    group_by(x_cat) %>%
-    mutate(y_prob = (y / max(y, na.rm=T))^fade_y,
-           weight = weight * y_prob) %>%
-    mutate(weight = ifelse(weight > 1, 1, weight)) %>%
-    ungroup() %>%
-    rowwise() %>%
-    mutate(color = ifelse(
-      Chart == "Datasaur",  sample(sel_color, 1, prob = c(weight, 1- weight)),
-      "#CCCCCC"
-    )) %>%
-    ungroup()
-  
-  # #Average colors for a dfade rather than picking one
-  # dino_silho5 <- dino_silho4 %>% 
-  #   group_by(x_cat) %>% 
-  #   mutate(y_prob = (y / max(y, na.rm=T))^fade_y,
-  #          weight = weight * y_prob) %>% 
-  #   mutate(weight = ifelse(weight > 1, 1, weight)) %>% 
-  #   ungroup() %>% 
-  #   rowwise() %>%
-  #   mutate(color = ifelse(
-  #     Chart == "Datasaur",  merge_colors(sel_color_values[[1]], sel_color_values[[2]], w1 = weight),
-  #     "#CCCCCC"
-  #   )) %>% 
-  #   ungroup()
   
   #Place holder for additional edits
   dino_cor2 <- dino_cor 
@@ -314,7 +341,7 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green"){
     scale_x_continuous(labels = xlabs$YM, breaks = xlabs$x, name = NULL) +
     labs(title = paste0(dino_name),
          caption = paste(dino_name, "by", as.character(info$Credit[1]), 
-                         "| Cause of death data from CDC.gov", "\n", "@Datasaurs v0.2.1")) +
+                         "| Cause of death data from CDC.gov", "\n", "@Datasaurs v0.2.2")) +
     theme_minimal()+
     theme(legend.position = "none",
           panel.grid.major.y = element_blank(),
