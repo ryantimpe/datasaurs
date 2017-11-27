@@ -241,7 +241,7 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
   ##
   if(pattern == "spotted"){
     
-    color_radius <- sample(seq(20, 125, 5), 1)
+    color_radius <- sample(seq(40, 125, 5), 1)
     
     wghts <- rnorm(2, 100, 20)
     wghts <- wghts / sum(wghts)
