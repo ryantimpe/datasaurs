@@ -289,6 +289,9 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     #     "#CCCCCC"
     #   )) %>% 
     #   ungroup()
+    
+    #Save pattern details
+    pattern_specs <- list(pattern = "spotted", radius = color_radius, weights = wghts, fade_y =  fade_y)
   }
   if(pattern == "striped"){
     stripe_radius <- sample(seq(10, 50, 5), 1)
@@ -307,6 +310,9 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
       )) 
     
     dino_silho5 <- dino_silho4
+    
+    #Save pattern details
+    pattern_specs <- list(pattern = "striped", radius = stripe_radius, direction = stripe_direction)
     
   }
   if(pattern == "geometric"){
@@ -329,6 +335,10 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
       )) 
     
     dino_silho5 <- dino_silho4
+    
+    #Save pattern details
+    pattern_specs <- list(pattern = "geometric", radius = stripe_radius, direction = stripe_direction,
+                          power_x = power_x, power_y = power_y)
     
   }
 
@@ -383,6 +393,8 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
   datasaur.list[["data_series"]] <- as.character(corrs[1, "Series"])
   datasaur.list[["data_detail"]] <- as.character(corrs[1, "Detail"])
   datasaur.list[["cor"]] <- as.numeric(corrs$cor[1])
+  datasaur.list[["color"]] <- sel_color
+  datasaur.list[["pattern"]] <- pattern_specs
   
   return(datasaur.list)
   
