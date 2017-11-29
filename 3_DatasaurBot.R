@@ -30,7 +30,8 @@ col1 <- "Green"
 col2 <- "Green"
 
 #Pattern! Default is spotted
-pattern <- sample(c("spotted", "striped"), 1, prob = c(0.8, 0.2))
+pattern_list <- c("spotted", "striped", "geometric")
+pattern <- sample(pattern_list, 1, prob = c(0.6, 0.25, 0.15))
 
 #If December, allow for Holidatasaurs!
 holidatasaur <- FALSE
@@ -38,7 +39,7 @@ if(months.Date(Sys.Date()) == "December"){
   holidatasaur <- sample(c(TRUE, FALSE), 1, prob = c(0.5, 0.5))
   if(holidatasaur){
     col2 <- "Red"
-    pattern <- sample(c("spotted", "striped"), 1, prob = c(0.1, 0.9))
+    pattern <- sample(pattern_list, 1, prob = c(0.1, 0.6, 0.3))
   }
 }
 
