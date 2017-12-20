@@ -6,6 +6,7 @@
 library(tidyverse);
 library(lubridate)
 
+#https://wonder.cdc.gov/ucd-icd10.html
 
 cod_list <- list()
 cod_files <- list.files("CoD/")
