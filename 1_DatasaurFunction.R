@@ -39,6 +39,8 @@ merge_colors <- function(c1, c2, w1 = 0.5){
 # Datasaur Function
 ###
 
+dino_name <- "Stegosaurus"
+
 datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spotted"){
   dino_raw <- readPNG(paste0("PhyloPic/", dino_name,".png"))
   
@@ -315,6 +317,41 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     pattern_specs <- list(pattern = "striped", radius = stripe_radius, direction = stripe_direction)
     
   }
+  if(pattern == "dotted"){
+    dot_radius <- sample(seq(20, 70, 5), 1)
+    dot_radius2 <- sample(seq(20, 70, 5), 1)
+    
+    pow_1 <- sample(1:2, 1)
+    
+    sel_rank <- sample(c("sum", "mult"), 1)
+    
+    coef_x <- sample(5:15, 1)/10
+    coef_y <- sample(5:15, 1)/10
+    
+    dino_silho4 <- dino_silho3 %>% 
+      select(Line, Chart, x, y) %>% 
+      mutate(stripe_cat = (coef_x*x^pow_1 + coef_y*y^pow_1) %/% dot_radius + 1,
+             stripe_cat2 = (coef_x*x - coef_y*y) %/% dot_radius2 + 1) %>% 
+      do(
+        if(sel_rank == "sum"){
+          mutate(., stripe_rank = (stripe_cat + stripe_cat2) %% 2)
+        } else {
+          mutate(., stripe_rank = (stripe_cat * stripe_cat2) %% 2)
+        }
+      ) %>%
+      mutate(color = case_when(
+        Chart == " Original" ~ "#CCCCCC",
+        stripe_rank == 0 ~ sel_color[1],
+        stripe_rank == 1 ~ sel_color[2],
+        TRUE ~ "#CCCCCC"
+      )) 
+    
+    dino_silho5 <- dino_silho4
+    
+    #Save pattern details
+    pattern_specs <- list(pattern = "dotted", radius = c(dot_radius, dot_radius2))
+    
+  }
   if(pattern == "geometric"){
     stripe_radius <- sample(seq(80, 200, 5), 1)
     
@@ -384,7 +421,7 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
           axis.title.y = element_text(size = 14, color="#DA1B10"),
           plot.title = element_text(size = 20, face="bold.italic")
           )
-  
+
   ###
   #Return datasaur
   ###
