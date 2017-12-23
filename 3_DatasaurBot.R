@@ -121,7 +121,9 @@ if(nchar(datasaur_text) < 125){
   
   datasaur_text <- paste(datasaur_text, 
                          sample(dino_hashes, 1),
-                         if(holidatasaur){"#Holidatasaur"}) #SHould be fine bc have more than 140 char now
+                         if(holidatasaur){"#Holidatasaur"}, #SHould be fine bc have more than 140 char now
+                         if(pattern == "america"){"#Americasaur"}
+                         )
 }
 
 updateStatus(datasaur_text, mediaPath = datasaur_filepath, 
