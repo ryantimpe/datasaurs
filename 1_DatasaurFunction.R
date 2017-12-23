@@ -39,7 +39,7 @@ merge_colors <- function(c1, c2, w1 = 0.5){
 # Datasaur Function
 ###
 
-dino_name <- "Stegosaurus"
+dino_name <- "Dreadnoughtus"
 
 datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spotted"){
   dino_raw <- readPNG(paste0("PhyloPic/", dino_name,".png"))
@@ -376,6 +376,44 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     #Save pattern details
     pattern_specs <- list(pattern = "geometric", radius = stripe_radius, direction = stripe_direction,
                           power_x = power_x, power_y = power_y)
+    
+  }
+  if(pattern == "america"){
+    star_radius <- 30
+    stripe_radius <- 25
+    
+    sel_color <- c("#4040FF", "#FFDDDD", "#FFFFFF", "#FF4040")
+    
+    dino_silho4 <- dino_silho3 %>% 
+      select(Line, Chart, x, y) %>% 
+      #Stars
+      mutate(star_cat = (x+y) %/% star_radius,
+             star_cat2 = (x - y) %/% star_radius) %>% 
+      mutate(star_rank = (star_cat * star_cat2) %% 2) %>%
+      mutate(color_star = case_when(
+        star_rank == 0 ~ sel_color[1],
+        star_rank == 1 ~ sel_color[3],
+        TRUE ~ "#CCCCCC"
+      )) %>% 
+      #Stripes
+      mutate(stripe_cat = y %/% stripe_radius,
+             stripe_rank = stripe_cat %% 2) %>% 
+      mutate(color_stripe = case_when(
+        stripe_rank == 0 ~ sel_color[4],
+        stripe_rank == 1 ~ sel_color[2],
+        TRUE ~ "#CCCCCC"
+      )) %>% 
+      #Stars & Stripes
+      mutate(color = case_when(
+        Chart == " Original" ~ "#CCCCCC",
+        x < max(x)/2.5 & y > max(y)/2 ~ color_star,
+        TRUE ~ color_stripe
+      ))
+    
+    dino_silho5 <- dino_silho4
+    
+    #Save pattern details
+    pattern_specs <- list(pattern = "dotted", radius = c(dot_radius, dot_radius2))
     
   }
 
