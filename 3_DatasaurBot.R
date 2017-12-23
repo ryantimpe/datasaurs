@@ -29,19 +29,45 @@ dino_name <- sample(dino_list, 1)
 col1 <- "Green"
 col2 <- "Green"
 
-#Pattern! Default is spotted
-pattern_list <- c("spotted", "striped", "geometric")
-pattern <- sample(pattern_list, 1, prob = c(0.6, 0.25, 0.15))
+#Pattern!
+pattern_list <- c("spotted" = 25, 
+                  "striped" = 10, 
+                  "geometric" = 10, 
+                  "dotted" = 5, 
+                  "america" = 0.1 #Super rare except for US patriotic holidays
+                  )
+pattern <- sample(names(pattern_list), 1, prob = pattern_list)
 
 #If December, allow for Holidatasaurs!
 holidatasaur <- FALSE
 if(months.Date(Sys.Date()) == "December"){
-  holidatasaur <- sample(c(TRUE, FALSE), 1, prob = c(0.5, 0.5))
+  holidatasaur <- sample(c(TRUE, FALSE), 1, prob = c(0.5, 0.5)) #50% chance in December
   if(holidatasaur){
     col2 <- "Red"
-    pattern <- sample(pattern_list, 1, prob = c(0.1, 0.6, 0.3))
+    
+    pattern_list <- c("spotted" = 5, 
+                      "striped" = 25, 
+                      "geometric" = 10, 
+                      "dotted" = 5, 
+                      "america" = 0
+    )
+    pattern <- sample(names(pattern_list), 1, prob = pattern_list)
   }
 }
+
+#Americasaur on US Patriot holidays
+americasaur_dates <- c("#PresidentsDay" = "2018-02-19", "#FlagDay" = "2018-06-14", 
+                 "#IndependenceDay" = "2018-07-04", "VeteransDay" = "2018-1-11",
+                 "#PresidentsDay" = "2019-02-18", "#FlagDay" = "2019-06-14", 
+                 "#IndependenceDay" = "2019-07-04", "VeteransDay" = "2019-1-11"
+                 )
+
+americasaur <- FALSE
+if(Sys.Date() %in% americasaur_dates){
+  americasaur <- sample(c(TRUE, FALSE), 1, prob = c(0.5, 0.5)) #50% chance on US patriot holidays
+  if(americasaur){pattern <- "america"}
+}
+
 
 datasaur_run <- datasaur(dino_name, col1 = col1, col2 = col2, pattern = pattern)
 
