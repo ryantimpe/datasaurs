@@ -77,7 +77,7 @@ if(months.Date(Sys.Date()) == "January" && lubridate::day(Sys.Date() == 1)){
     col1 <- "Dark"
     col2 <- "Gold"
     
-    pattern_list <- c("spotted" = 5, 
+    pattern_list <- c("spotted" = 20, 
                       "striped" = 20, 
                       "geometric" = 10, 
                       "dotted" = 15
@@ -149,7 +149,7 @@ if(nchar(datasaur_text) < 175){
                          #Additional hashtags
                          if(holidatasaur){"#Holidatasaur"}, 
                          if(pattern == "america"){"#Americasaur"},
-                         if(newyearsaur){"#NewYears #2018"}
+                         if(newyearsaur){paste("#NewYears", paste0("#", lubridate::year(Sys.Date())))}
                          )
 }
 
