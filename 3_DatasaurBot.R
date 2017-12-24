@@ -93,6 +93,7 @@ datasaur_text <- paste0(dino_name, ": ", round(datasaur_run[[4]], 2), " correlat
 #Clean up text a big
 datasaur_text <- gsub(", not elsewhere classified", "", datasaur_text)
 datasaur_text <- gsub(", including symptomatic,", "", datasaur_text)
+datasaur_text <- gsub(" symptoms, signs and", "", datasaur_text)
 datasaur_text <- gsub(" and certain disorders involving the immune mechanism", "", datasaur_text)
 
 # if(nchar(datasaur_text) > 135){
@@ -100,30 +101,36 @@ datasaur_text <- gsub(" and certain disorders involving the immune mechanism", "
 # }
 
 #Add hashtags sometimes ----
-if(nchar(datasaur_text) < 125){
+if(nchar(datasaur_text) < 175){
   dname <- paste0("#", strsplit(dino_name, " ")[[1]])
   dname <- ifelse(nchar(dname) < 15, dname, "")
   
-  dino_hashes <- c(rep("#rstats", 1), 
-                   rep("#dinosaurs", 5), rep("#dinos", 2), 
-                   rep("#dataviz", 10), rep("#dataisbeautiful", 2), 
-                   rep("#ggplot", 1),
-                   rep("#science", 3),
-                   rep(dname, 6))
+  dino_hashes <- c("#rstats" = 2, 
+                   "#dinosaurs" = 5, "#dinos" = 2, 
+                   "#dataviz" = 10, "#dataisbeautiful" = 2, 
+                   "#ggplot" = 1,
+                   "#science" = 2, "#statistics" = 2,
+                   "#paleontology" = 2, "#paleobiology" = 2, 
+                   "#bioinformatics" = 3)
+  
+  dname_hash <- 6
+  names(dname_hash) <- dname
+  dino_hashes <- c(dino_hashes, dname_hash)
   
   if(weekdays(Sys.Date()) == "Friday"){
-    dino_hashes <- c(rep("#FossilFriday", 100), #Very High Chance of #FossilFriday 
+    dino_hashes <- c("#FossilFriday" = 80, #Very High Chance of #FossilFriday 
                      dino_hashes)
   }
   
   if(months.Date(Sys.Date()) == "November"){
-    dino_hashes <- c(rep("#Dinovember", 50), #High chance of #Dinovember
+    dino_hashes <- c("#Dinovember" = 50, #High chance of #Dinovember
                      dino_hashes)
   }
   
   datasaur_text <- paste(datasaur_text, 
-                         sample(dino_hashes, 1),
-                         if(holidatasaur){"#Holidatasaur"}, #SHould be fine bc have more than 140 char now
+                         sample(names(dino_hashes), 1, prob = dino_hashes),
+                         #Additional hashtags
+                         if(holidatasaur){"#Holidatasaur"}, 
                          if(pattern == "america"){"#Americasaur"}
                          )
 }
