@@ -38,7 +38,7 @@ pattern_list <- c("spotted" = 25,
                   )
 pattern <- sample(names(pattern_list), 1, prob = pattern_list)
 
-#If December, allow for Holidatasaurs!
+#If December, allow for Holidatasaurs! ----
 holidatasaur <- FALSE
 if(months.Date(Sys.Date()) == "December"){
   holidatasaur <- sample(c(TRUE, FALSE), 1, prob = c(0.5, 0.5)) #50% chance in December
@@ -55,13 +55,13 @@ if(months.Date(Sys.Date()) == "December"){
   }
 }
 
-#Americasaur on US Patriot holidays
+
+# Americasaur on US Patriot holidays ----
 americasaur_dates <- c("#PresidentsDay" = "2018-02-19", "#FlagDay" = "2018-06-14", 
                  "#IndependenceDay" = "2018-07-04", "#VeteransDay" = "2018-1-11",
                  "#PresidentsDay" = "2019-02-18", "#FlagDay" = "2019-06-14", 
                  "#IndependenceDay" = "2019-07-04", "#VeteransDay" = "2019-1-11"
                  )
-
 americasaur <- FALSE
 if(Sys.Date() %in% americasaur_dates){
   americasaur <- sample(c(TRUE, FALSE), 1, prob = c(0.5, 0.5)) #50% chance on US patriot holidays
@@ -69,10 +69,11 @@ if(Sys.Date() %in% americasaur_dates){
 }
 
 
+#RUN ----
 datasaur_run <- datasaur(dino_name, col1 = col1, col2 = col2, pattern = pattern)
 
 ####
-# Tweet it
+# Tweet it ---- 
 ####
 
 # Set up Twitter API
@@ -94,10 +95,11 @@ datasaur_text <- gsub(", not elsewhere classified", "", datasaur_text)
 datasaur_text <- gsub(", including symptomatic,", "", datasaur_text)
 datasaur_text <- gsub(" and certain disorders involving the immune mechanism", "", datasaur_text)
 
-if(nchar(datasaur_text) > 135){
-  datasaur_text <- substr(datasaur_text, 1, 135)
-}
-#Add hashtags sometimes
+# if(nchar(datasaur_text) > 135){
+#   datasaur_text <- substr(datasaur_text, 1, 135)
+# }
+
+#Add hashtags sometimes ----
 if(nchar(datasaur_text) < 125){
   dname <- paste0("#", strsplit(dino_name, " ")[[1]])
   dname <- ifelse(nchar(dname) < 15, dname, "")
