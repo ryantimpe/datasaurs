@@ -25,9 +25,9 @@ dino_info <- read.csv("BotInputs/DatasaurList.csv", stringsAsFactors = F)
 dino_list <- gsub(".png", "", list.files("PhyloPic/"))
 dino_name <- sample(dino_list, 1)
 
-#Color! Default is green on green.
+#Color! Default is green on green. Sometimes surprises.
 col1 <- "Green"
-col2 <- "Green"
+col2 <- sample(c("Green", "Blue"), prob = c(95, 5))
 
 #Pattern!
 pattern_list <- c("spotted" = 25, 
@@ -57,9 +57,9 @@ if(months.Date(Sys.Date()) == "December"){
 
 #Americasaur on US Patriot holidays
 americasaur_dates <- c("#PresidentsDay" = "2018-02-19", "#FlagDay" = "2018-06-14", 
-                 "#IndependenceDay" = "2018-07-04", "VeteransDay" = "2018-1-11",
+                 "#IndependenceDay" = "2018-07-04", "#VeteransDay" = "2018-1-11",
                  "#PresidentsDay" = "2019-02-18", "#FlagDay" = "2019-06-14", 
-                 "#IndependenceDay" = "2019-07-04", "VeteransDay" = "2019-1-11"
+                 "#IndependenceDay" = "2019-07-04", "#VeteransDay" = "2019-1-11"
                  )
 
 americasaur <- FALSE
