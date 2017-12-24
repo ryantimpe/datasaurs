@@ -69,6 +69,23 @@ if(Sys.Date() %in% americasaur_dates){
 }
 
 
+# New Years datasaur ----
+newyearsaur <- FALSE
+if(months.Date(Sys.Date()) == "January" && lubridate::day(Sys.Date() == 1)){
+  newyearsaur <- sample(c(TRUE, FALSE), 1, prob = c(0.75, 0.25)) #75% of new years colors
+  if(newyearsaur){
+    col1 <- "Dark"
+    col2 <- "Gold"
+    
+    pattern_list <- c("spotted" = 5, 
+                      "striped" = 20, 
+                      "geometric" = 10, 
+                      "dotted" = 15
+    )
+    pattern <- sample(names(pattern_list), 1, prob = pattern_list)
+  }
+}
+
 #RUN ----
 datasaur_run <- datasaur(dino_name, col1 = col1, col2 = col2, pattern = pattern)
 
@@ -131,7 +148,8 @@ if(nchar(datasaur_text) < 175){
                          sample(names(dino_hashes), 1, prob = dino_hashes),
                          #Additional hashtags
                          if(holidatasaur){"#Holidatasaur"}, 
-                         if(pattern == "america"){"#Americasaur"}
+                         if(pattern == "america"){"#Americasaur"},
+                         if(newyearsaur){"#NewYears #2018"}
                          )
 }
 
