@@ -351,12 +351,15 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     
   }
   if(pattern == "geometric"){
-    stripe_radius <- sample(seq(80, 200, 5), 1)
+    stripe_radius <- sample(seq(10, 100, 5), 1)
     
     stripe_direction <- runif(1, -2, 2) 
     
     power_x <- sample(c(seq(1.2, 2, by=0.1), rep(2, 5)), 1)
     power_y <- sample(c(rep(power_x, 10), seq(1.2, 2, by=0.1)), 1)
+    
+    # power_x <- 2
+    # power_y <- 2
     
     dino_silho4 <- dino_silho3 %>% 
       select(Line, Chart, x, y) %>% 
@@ -404,14 +407,14 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
       #Stars & Stripes
       mutate(color = case_when(
         Chart == " Original" ~ "#CCCCCC",
-        x < max(x)/2.5 & y > max(y)/2 ~ color_star,
+        x < max(x)/2.75 & y > max(y)/2 ~ color_star,
         TRUE ~ color_stripe
       ))
     
     dino_silho5 <- dino_silho4
     
     #Save pattern details
-    pattern_specs <- list(pattern = "dotted", radius = c(dot_radius, dot_radius2))
+    pattern_specs <- list(pattern = "america", radius = c(star_radius, stripe_radius))
     
   }
 
