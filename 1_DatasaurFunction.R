@@ -38,7 +38,7 @@ merge_colors <- function(c1, c2, w1 = 0.5){
 ###
 # Datasaur Function
 ###
-
+dino_name <- "Vulcanodon"
 datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spotted"){
   dino_raw <- readPNG(paste0("PhyloPic/", dino_name,".png"))
   
@@ -315,13 +315,14 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     pattern_specs <- list(pattern = "striped", radius = stripe_radius, direction = stripe_direction)
     
   }
-  if(pattern == "dotted"){
-    dot_radius <- sample(seq(20, 70, 5), 1)
-    dot_radius2 <- sample(seq(20, 70, 5), 1)
+  if(pattern == "diamond"){
+    dot_radius <- sample(seq(10, 40, 2), 1)
+    dot_radius2 <- sample(seq(10, 40, 2), 1)
     
     pow_1 <- sample(1:2, 1)
     
     sel_rank <- sample(c("sum", "mult"), 1)
+    if(pow_1 == 2){ sel_rank <- "mult"} #Otherwise, we end up in Geometric territory
     
     coef_x <- sample(5:15, 1)/10
     coef_y <- sample(5:15, 1)/10
@@ -347,8 +348,39 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     dino_silho5 <- dino_silho4
     
     #Save pattern details
-    pattern_specs <- list(pattern = "dotted", radius = c(dot_radius, dot_radius2))
+    pattern_specs <- list(pattern = "diamond", radius = c(dot_radius, dot_radius2),
+                          power = pow_1, coefs = c(coef_x, coef_y),
+                          operation = sel_rank)
     
+  }
+  if(pattern == "dotted"){
+    group_radius <- sample(seq(50, 150, 5), 1)
+    dot_sizes <- sample(1:5, 1)
+    dot_radius <- sample(seq(10, 42), dot_sizes)/100
+
+    dino_silho4 <- dino_silho3 %>% 
+      select(Line, Chart, x, y) %>% 
+      mutate(group_x = x %/% group_radius, 
+             group_y = y %/% group_radius) %>% 
+      group_by(Chart, group_x, group_y) %>% 
+      mutate(p_dot  = (group_x + group_y) %% dot_sizes,
+             n_dot = n(),
+             x_mid = median(x, na.rm=TRUE), 
+             y_mid = median(y, na.rm=TRUE)) %>% 
+      mutate(p_dist = ((x-x_mid)^2 + (y-y_mid)^2)^(1/2)) %>% 
+      ungroup() %>% 
+      mutate(color = case_when(
+        Chart == " Original" ~ "#CCCCCC",
+        p_dist <  dot_radius[p_dot+1]*group_radius*n_dot/max(n_dot) ~ sel_color[2],
+        p_dist >= dot_radius[p_dot+1]*group_radius*n_dot/max(n_dot) ~ sel_color[1],
+        TRUE ~ "#CCCCCC"
+      )) 
+    
+    dino_silho5 <- dino_silho4
+    
+    #Save pattern details
+    pattern_specs <- list(pattern = "dotted", group_radius = group_radius, 
+                          dot_radius = dot_radius)
   }
   if(pattern == "geometric"){
     stripe_radius <- sample(seq(10, 100, 5), 1)
@@ -418,7 +450,6 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     
   }
 
-  
   #Place holder for additional edits
   dino_cor2 <- dino_cor 
   

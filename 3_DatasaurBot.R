@@ -27,20 +27,22 @@ dino_name <- sample(dino_list, 1)
 
 #Color! Default is green on green. Sometimes surprises.
 col1 <- "Green"
-col2 <- sample(c("Green", "Blue"), prob = c(95, 5))
+col2_list = c("Green" = 95, "Blue" = 5, "Gold" = 3, "Dark" = 2)
+col2 <- sample(names(col2_list), 1, prob = col2_list)
 
 #Pattern!
-pattern_list <- c("spotted" = 25, 
+pattern_list <- c("spotted" = 40, #For now, Spotted should always be ~50%... even when you get excited about adding a new pattern
                   "striped" = 10, 
                   "geometric" = 10, 
-                  "dotted" = 5, 
+                  "dotted" = 10, 
+                  "diamond" = 10,
                   "america" = 0.1 #Super rare except for US patriotic holidays
                   )
 pattern <- sample(names(pattern_list), 1, prob = pattern_list)
 
-#If December, allow for Holidatasaurs! ----
+# If December, allow for Holidatasaurs! ----
 holidatasaur <- FALSE
-if(months.Date(Sys.Date()) == "December"){
+if(months.Date(Sys.Date()) == "December" && lubridate::day(Sys.Date()) < 31){
   holidatasaur <- sample(c(TRUE, FALSE), 1, prob = c(0.5, 0.5)) #50% chance in December
   if(holidatasaur){
     col2 <- "Red"
@@ -48,7 +50,8 @@ if(months.Date(Sys.Date()) == "December"){
     pattern_list <- c("spotted" = 5, 
                       "striped" = 25, 
                       "geometric" = 10, 
-                      "dotted" = 5, 
+                      "dotted" = 5,
+                      "diamond" = 5, 
                       "america" = 0
     )
     pattern <- sample(names(pattern_list), 1, prob = pattern_list)
@@ -71,7 +74,8 @@ if(Sys.Date() %in% americasaur_dates){
 
 # New Years datasaur ----
 newyearsaur <- FALSE
-if(months.Date(Sys.Date()) == "January" && lubridate::day(Sys.Date() == 1)){
+if((months.Date(Sys.Date()) == "January"  && lubridate::day(Sys.Date()) == 1) ||
+   (months.Date(Sys.Date()) == "December" && lubridate::day(Sys.Date()) == 31)){
   newyearsaur <- sample(c(TRUE, FALSE), 1, prob = c(0.75, 0.25)) #75% of new years colors
   if(newyearsaur){
     col1 <- "Dark"
@@ -80,7 +84,8 @@ if(months.Date(Sys.Date()) == "January" && lubridate::day(Sys.Date() == 1)){
     pattern_list <- c("spotted" = 20, 
                       "striped" = 20, 
                       "geometric" = 10, 
-                      "dotted" = 15
+                      "dotted" = 25,
+                      "diamond" = 15
     )
     pattern <- sample(names(pattern_list), 1, prob = pattern_list)
   }
@@ -149,7 +154,7 @@ if(nchar(datasaur_text) < 175){
                          #Additional hashtags
                          if(holidatasaur){"#Holidatasaur"}, 
                          if(pattern == "america"){"#Americasaur"},
-                         if(newyearsaur){paste("#NewYears", paste0("#", lubridate::year(Sys.Date())))}
+                         if(newyearsaur){paste("#NewYears", paste0("#", lubridate::year(Sys.Date()+1)))} # +1 to account for NYE
                          )
 }
 
