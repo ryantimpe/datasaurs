@@ -128,7 +128,7 @@ if(nchar(datasaur_text) < 175){
   dname <- ifelse(nchar(dname) < 15, dname, "")
   
   dino_hashes <- c("#rstats" = 2, 
-                   "#dinosaurs" = 5, "#dinos" = 2, 
+                   #"#dinosaurs" = 5, "#dinos" = 2, 
                    "#dataviz" = 10, "#dataisbeautiful" = 2, 
                    "#ggplot" = 1,
                    "#science" = 2, "#statistics" = 2,
