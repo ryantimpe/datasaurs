@@ -8,7 +8,7 @@ library(lubridate);
 library(scales); library(zoo);
 library(twitteR);
 
-setwd("C:\Users\Ryan\Documents\808Projects\Datasaurs")
+# setwd("C:\Users\Ryan\Documents\808Projects\Datasaurs")
 
 source("1_DatasaurFunction.R")
 
@@ -42,7 +42,7 @@ pattern <- sample(names(pattern_list), 1, prob = pattern_list)
 
 # If December, allow for Holidatasaurs! ----
 holidatasaur <- FALSE
-if(months.Date(Sys.Date()) == "December" && lubridate::day(Sys.Date()) < 31){
+if(months.Date(Sys.Date()) == "December" && lubridate::day(Sys.Date()) < 29){
   holidatasaur <- sample(c(TRUE, FALSE), 1, prob = c(0.5, 0.5)) #50% chance in December
   if(holidatasaur){
     col2 <- "Red"
