@@ -125,11 +125,10 @@ datasaur_text <- gsub(" and certain disorders involving the immune mechanism", "
 #Add hashtags sometimes ----
 if(nchar(datasaur_text) < 175){
   dname <- paste0("#", strsplit(dino_name, " ")[[1]])
-  dname <- ifelse(nchar(dname) < 15, dname, "")
   
   dino_hashes <- c("#rstats" = 2, 
                    #"#dinosaurs" = 5, "#dinos" = 2, 
-                   "#dataviz" = 10, "#dataisbeautiful" = 2, 
+                   "#dataviz" = 5, "#dataisbeautiful" = 2, 
                    "#ggplot" = 1,
                    "#science" = 2, "#statistics" = 2,
                    "#paleontology" = 2, "#paleobiology" = 2, 
@@ -150,7 +149,7 @@ if(nchar(datasaur_text) < 175){
   }
   
   datasaur_text <- paste(datasaur_text, 
-                         sample(names(dino_hashes), 1, prob = dino_hashes),
+                         sample(c(names(dino_hashes), ""), 1, prob = c(dino_hashes, 5)),
                          #Additional hashtags
                          if(holidatasaur){"#Holidatasaur"}, 
                          if(pattern == "america"){"#Americasaur"},
