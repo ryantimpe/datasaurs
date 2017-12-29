@@ -38,7 +38,7 @@ merge_colors <- function(c1, c2, w1 = 0.5){
 ###
 # Datasaur Function
 ###
-dino_name <- "Vulcanodon"
+
 datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spotted"){
   dino_raw <- readPNG(paste0("PhyloPic/", dino_name,".png"))
   
