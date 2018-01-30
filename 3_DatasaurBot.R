@@ -27,15 +27,15 @@ dino_name <- sample(dino_list, 1)
 
 #Color! Default is green on green. Sometimes surprises.
 col1 <- "Green"
-col2_list = c("Green" = 95, "Blue" = 5, "Gold" = 3, "Dark" = 2)
+col2_list <- c("Green" = 95, "Blue" = 5, "Gold" = 3, "Dark" = 2)
 col2 <- sample(names(col2_list), 1, prob = col2_list)
 
 #Pattern!
 pattern_list <- c("spotted" = 40, #For now, Spotted should always be ~50%... even when you get excited about adding a new pattern
-                  "striped" = 10, 
-                  "geometric" = 10, 
-                  "dotted" = 10, 
-                  "diamond" = 10,
+                  "striped" = 20, 
+                  "geometric" = 20, 
+                  "dotted" = 20, 
+                  "diamond" = 20,
                   "america" = 0.1 #Super rare except for US patriotic holidays
                   )
 pattern <- sample(names(pattern_list), 1, prob = pattern_list)
@@ -93,6 +93,7 @@ if((months.Date(Sys.Date()) == "January"  && lubridate::day(Sys.Date()) == 1) ||
 
 #RUN ----
 datasaur_run <- datasaur(dino_name, col1 = col1, col2 = col2, pattern = pattern)
+# datasaur_run
 
 ####
 # Tweet it ---- 
@@ -129,7 +130,7 @@ if(nchar(datasaur_text) < 175){
   dino_hashes <- c("#rstats" = 2, 
                    #"#dinosaurs" = 5, "#dinos" = 2, 
                    "#dataviz" = 5, "#dataisbeautiful" = 2, 
-                   "#ggplot" = 1,
+                   "#machinelearning" = 3, "#datascience" = 4,
                    "#science" = 2, "#statistics" = 2,
                    "#paleontology" = 2, "#paleobiology" = 2, 
                    "#bioinformatics" = 3)
@@ -153,7 +154,7 @@ if(nchar(datasaur_text) < 175){
                          #Additional hashtags
                          if(holidatasaur){"#Holidatasaur"}, 
                          if(pattern == "america"){"#Americasaur"},
-                         if(newyearsaur){paste("#NewYears", paste0("#", lubridate::year(Sys.Date()+1)))} # +1 to account for NYE
+                         if(newyearsaur){paste("#HappyNewYears", paste0("#NY", lubridate::year(Sys.Date()+1)))} # +1 to account for NYE
                          )
 }
 
