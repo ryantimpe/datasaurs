@@ -61,13 +61,13 @@ if(months.Date(Sys.Date()) == "December" && lubridate::day(Sys.Date()) < 29){
 
 # Americasaur on US Patriot holidays ----
 americasaur_dates <- c("#PresidentsDay" = "2018-02-19", "#FlagDay" = "2018-06-14", 
-                 "#IndependenceDay" = "2018-07-04", "#VeteransDay" = "2018-1-11",
+                 "#IndependenceDay" = "2018-07-04", "#VeteransDay" = "2018-11-11",
                  "#PresidentsDay" = "2019-02-18", "#FlagDay" = "2019-06-14", 
-                 "#IndependenceDay" = "2019-07-04", "#VeteransDay" = "2019-1-11"
+                 "#IndependenceDay" = "2019-07-04", "#VeteransDay" = "2019-11-11"
                  )
 americasaur <- FALSE
 if(Sys.Date() %in% americasaur_dates){
-  americasaur <- sample(c(TRUE, FALSE), 1, prob = c(0.5, 0.5)) #50% chance on US patriot holidays
+  americasaur <- sample(c(TRUE, FALSE), 1, prob = c(0.75, 0.25)) #75% chance on US patriot holidays
   if(americasaur){pattern <- "america"}
 }
 
