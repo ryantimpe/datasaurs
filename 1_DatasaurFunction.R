@@ -21,7 +21,7 @@ convert_color_values <- function(hex_color){
   red <-  as.numeric(as.hexmode(substr(hex_color, 2, 3)))/255
   grn <-  as.numeric(as.hexmode(substr(hex_color, 4, 5)))/255
   blu <-  as.numeric(as.hexmode(substr(hex_color, 6, 7)))/255
-  
+
   return(c(red, grn, blu))
 }
 merge_colors <- function(c1, c2, w1 = 0.5){
@@ -31,7 +31,7 @@ merge_colors <- function(c1, c2, w1 = 0.5){
   if(nchar(grn) == 1){ grn <- paste0("0", grn)}
   blu <- as.hexmode(round((w1*c1[3] + (1-w1)*c2[3])*255))
   if(nchar(blu) == 1){ blu <- paste0("0", blu)}
-  
+
   return(paste0("#", red, grn, blu))
 }
 
@@ -431,6 +431,41 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     pattern_specs <- list(pattern = "america", radius = c(star_radius, stripe_radius))
     
   }
+  if(pattern == "hearts"){
+    
+    group_radius <- c(sample(seq(50, 120, 5), 1))
+
+    dino_silho4 <- dino_silho3 %>% 
+      select(Line, Chart, x, y) %>% 
+      mutate(group_x = x %/% group_radius, 
+             group_y = y %/% group_radius) %>% 
+      group_by(Chart, group_x, group_y) %>% 
+      mutate(n_dot = n(), #Number of pix actually in group, for scaling later
+             # Unlike the circles, consider full group size rather than present pixels
+             x_mid = (group_x + 0.5)* group_radius,
+             y_mid = (group_y + 0.5)* group_radius,
+             x_mid_left = (group_x + 0.25)* group_radius,
+             x_mid_rght = (group_x + 0.75)* group_radius
+             ) %>% 
+      mutate(p_dist_from_left = ((x-x_mid_left)^2 + (y-y_mid)^2)^(1/2),
+             p_dist_from_rght = ((x-x_mid_rght)^2 + (y-y_mid)^2)^(1/2)) %>% 
+      ungroup() %>% 
+      mutate(color = case_when(
+        Chart == " Original" ~ "#CCCCCC",
+        #Top Left hump
+        (y >= y_mid & x <= x_mid) & p_dist_from_left < (group_radius/4) ~ sel_color[2],
+        #Top right hump
+        (y >= y_mid & x >= x_mid) & p_dist_from_rght < (group_radius/4) ~ sel_color[2],
+        #Bottom  
+        (y < y_mid) & ((y_mid - y) <= abs(x - x_mid)) ~ sel_color[2],
+        TRUE ~ sel_color[1]
+      )) 
+    
+    dino_silho5 <- dino_silho4
+    
+    #Save pattern details
+    pattern_specs <- list(pattern = "hearts", group_radius = group_radius)
+  }
 
   ###
   # Alpha layer ----
@@ -463,7 +498,7 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
   
   
   ###
-  #PLOT!
+  # PLOT! ----
   ###
 
   #Annual X labels... 
