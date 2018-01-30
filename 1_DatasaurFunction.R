@@ -450,8 +450,37 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     
   }
 
+  ###
+  # Alpha layer ----
+  ###
+  sel_alpha <- sample(2:9, 1)/10
+  sel_alpha_y <- sample(3:8, 1)
+  
+  sel_alpha_radius <- sample(seq(20, 100, 5), 1)
+    
+  dino_alpha <- dino_silho5 %>% 
+    filter(Chart == "Datasaur") %>% 
+    group_by(x %/% sel_alpha_radius) %>% 
+    mutate(alpha_y = (1- y / max(y, na.rm = TRUE))) %>% 
+    ungroup() %>% 
+    # group_by(y %/% sel_alpha_radius) %>%
+    mutate(alpha_x = (1 - x / max(x, na.rm = TRUE))) %>%
+    # ungroup() %>%
+    group_by(x+y %/% sel_alpha_radius) %>%
+    mutate(alpha_xy = (1 - (x+y) / max((x+y), na.rm = TRUE))) %>%
+    ungroup() %>%
+    mutate(alpha = (alpha_x  + sel_alpha_y*alpha_y )/(sel_alpha_y+2) * sel_alpha) %>% 
+    group_by(y) %>%
+    mutate(alpha2 = (lag(alpha, 2) + lag(alpha, 1) + alpha + lead(alpha, 1) + lead(alpha, 2))/5,
+           alpha2 = ifelse(is.na(alpha2), alpha, alpha2)
+    ) %>%
+    ungroup() %>%
+    select(-alpha) %>%
+    rename(alpha = alpha2)
+  
   #Place holder for additional edits
   dino_cor2 <- dino_cor 
+  
   
   ###
   #PLOT!
@@ -471,6 +500,8 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     geom_line(size = 1.5) +
     scale_color_manual(values = c("value_cod" = "#FC3D32", "value_act" = sel_color[1])) +
     scale_fill_identity() +
+    geom_raster(data=dino_alpha, aes(x=x, y=y, alpha = alpha), fill = "#111111")+
+    scale_alpha_identity() + 
     coord_equal() +
     facet_grid(Chart ~.) +
     scale_y_continuous(limits=c(0, NA), breaks = NULL, 
@@ -480,7 +511,7 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     scale_x_continuous(labels = xlabs$YM, breaks = xlabs$x, name = NULL) +
     labs(title = paste0(dino_name),
          caption = paste(dino_name, "by", as.character(info$Credit[1]), 
-                         "| Cause of death data from CDC.gov", "\n", "@Datasaurs v0.2.3")) +
+                         "| Cause of death data from CDC.gov", "\n", "@Datasaurs v0.2.4")) +
     theme_minimal()+
     theme(legend.position = "none",
           panel.grid.major.y = element_blank(),
