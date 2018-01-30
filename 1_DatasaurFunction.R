@@ -231,13 +231,9 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     select(Shade) %>% 
     sample_n(1) %>% 
     as.character()
-  
-  #Randomize color order
-  #sel_color <- sample(sel_color, 2)
-  # sel_color_values <- lapply(sel_color, convert_color_values)
-  
+
   ##
-  # Spotted datasaur
+  # Color patterns
   ##
   if(pattern == "spotted"){
     
@@ -260,7 +256,7 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
              weight = ifelse(is.nan(weight), 1, weight)) %>% 
       ungroup()
     
-    fade_y <- runif(1, min = 0, max = 3)
+    fade_y <- runif(1, min = 1, max = 2)
     
     #Select green based on weight
     dino_silho5 <- dino_silho4 %>%
@@ -275,20 +271,6 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
         "#CCCCCC"
       )) %>%
       ungroup()
-    
-    # #Average colors for a dfade rather than picking one
-    # dino_silho5 <- dino_silho4 %>% 
-    #   group_by(x_cat) %>% 
-    #   mutate(y_prob = (y / max(y, na.rm=T))^fade_y,
-    #          weight = weight * y_prob) %>% 
-    #   mutate(weight = ifelse(weight > 1, 1, weight)) %>% 
-    #   ungroup() %>% 
-    #   rowwise() %>%
-    #   mutate(color = ifelse(
-    #     Chart == "Datasaur",  merge_colors(sel_color_values[[1]], sel_color_values[[2]], w1 = weight),
-    #     "#CCCCCC"
-    #   )) %>% 
-    #   ungroup()
     
     #Save pattern details
     pattern_specs <- list(pattern = "spotted", radius = color_radius, weights = wghts, fade_y =  fade_y)
@@ -354,9 +336,9 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     
   }
   if(pattern == "dotted"){
-    group_radius <- sample(seq(50, 150, 5), 1)
+    group_radius <- sample(seq(20, 150, 5), 1)
     dot_sizes <- sample(1:5, 1)
-    dot_radius <- sample(seq(10, 42), dot_sizes)/100
+    dot_radius <- sample(seq(5, 42), dot_sizes)/100
 
     dino_silho4 <- dino_silho3 %>% 
       select(Line, Chart, x, y) %>% 
@@ -463,9 +445,7 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     group_by(x %/% sel_alpha_radius) %>% 
     mutate(alpha_y = (1- y / max(y, na.rm = TRUE))) %>% 
     ungroup() %>% 
-    # group_by(y %/% sel_alpha_radius) %>%
     mutate(alpha_x = (1 - x / max(x, na.rm = TRUE))) %>%
-    # ungroup() %>%
     group_by(x+y %/% sel_alpha_radius) %>%
     mutate(alpha_xy = (1 - (x+y) / max((x+y), na.rm = TRUE))) %>%
     ungroup() %>%
