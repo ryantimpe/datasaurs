@@ -36,12 +36,13 @@ pattern_list <- c("spotted" = 40, #For now, Spotted should always be ~50%... eve
                   "geometric" = 20, 
                   "dotted" = 20, 
                   "diamond" = 20,
-                  "hearts" = 1, #Rare except valentines day
+                  "hearts" = 1, #Rare except valentines day,
+                  "rainbow" = 0.1, #Super rare except for June... then less rare
                   "america" = 0.1 #Super rare except for US patriotic holidays
                   )
 pattern <- sample(names(pattern_list), 1, prob = pattern_list)
 
-# If December, allow for Holidatasaurs! ----
+# DECEMBER --> Holidatasaurs! ----
 holidatasaur <- FALSE
 if(months.Date(Sys.Date()) == "December" && lubridate::day(Sys.Date()) < 29){
   holidatasaur <- sample(c(TRUE, FALSE), 1, prob = c(0.5, 0.5)) #50% chance in December
@@ -60,7 +61,7 @@ if(months.Date(Sys.Date()) == "December" && lubridate::day(Sys.Date()) < 29){
 }
 
 
-# Americasaur on US Patriot holidays ----
+# PRESIDENTS DAY, FLAG DAY, 4TH OF JULY, VETERANS DAY --> Americasaur ----
 americasaur_dates <- c("#PresidentsDay" = "2018-02-19", "#FlagDay" = "2018-06-14", 
                  "#IndependenceDay" = "2018-07-04", "#VeteransDay" = "2018-11-11",
                  "#PresidentsDay" = "2019-02-18", "#FlagDay" = "2019-06-14", 
@@ -73,7 +74,7 @@ if(Sys.Date() %in% americasaur_dates){
 }
 
 
-# New Years datasaur ----
+# JANUARY / DECEMBER --> New Years datasaur ----
 newyearsaur <- FALSE
 if((months.Date(Sys.Date()) == "January"  && lubridate::day(Sys.Date()) == 1) ||
    (months.Date(Sys.Date()) == "December" && lubridate::day(Sys.Date()) == 31)){
@@ -91,7 +92,7 @@ if((months.Date(Sys.Date()) == "January"  && lubridate::day(Sys.Date()) == 1) ||
     pattern <- sample(names(pattern_list), 1, prob = pattern_list)
   }
 }
-#Valentines Day ----
+# FEBRUARY 14 --> Valentines Day ----
 valentinesaur <- FALSE
 if((months.Date(Sys.Date()) == "February"  && lubridate::day(Sys.Date()) == 14)){
   valentinesaur <- sample(c(TRUE, FALSE), 1, prob = c(1, 0)) # 100% of valenties
@@ -113,6 +114,24 @@ if((months.Date(Sys.Date()) == "February"  && lubridate::day(Sys.Date()) == 14))
 }
 
 
+# MARCH 17 --> ST Patricks Day ----
+stpatrick <- FALSE
+if((months.Date(Sys.Date()) == "March" && lubridate::day(Sys.Date()) == 17)){
+  stpatrick <- sample(c(TRUE, FALSE), 1, prob = c(1, 0)) #100%
+  if(stpatrick){
+    col1 <- "Green"
+    pattern <- "rainbow"
+  }
+}
+# JUNE --> ST Patricks Day ----
+pridesaur <- FALSE
+if((months.Date(Sys.Date()) == "June")){
+  pridesaur <- sample(c(TRUE, FALSE), 1, prob = c(1, 9)) # Chance of Pride datasaur in June
+  if(pridesaur){
+    col1 <- "Dark"
+    pattern <- "rainbow"
+  }
+}
 #RUN ----
 datasaur_run <- datasaur(dino_name, col1 = col1, col2 = col2, pattern = pattern)
 # datasaur_run
@@ -178,6 +197,8 @@ if(nchar(datasaur_text) < 175){
                          if(holidatasaur){"#Holidatasaur"}, 
                          if(pattern == "america"){"#Americasaur"},
                          if(valentinesaur){"#Valentinesaur"},
+                         if(stpatrick){"#StPaddatasaur"},
+                         if(pridesaur){"#PRIDEsaur"},
                          if(newyearsaur){paste("#HappyNewYears", paste0("#NY", lubridate::year(Sys.Date()+1)))} # +1 to account for NYE
                          )
 }
