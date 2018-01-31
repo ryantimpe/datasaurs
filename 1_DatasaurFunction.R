@@ -158,6 +158,7 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     y.max <- as.numeric(dino_silho_cod[i, "y_cod"])
     data.frame(x = i, y = y.max:y.min)
   })
+  
   dino_silho_cod2 <- bind_rows(dino_silho_cod2) %>% 
     mutate(Line = "value_cod")
     
@@ -430,6 +431,40 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     #Save pattern details
     pattern_specs <- list(pattern = "america", radius = c(star_radius, stripe_radius))
     
+  }
+  if(pattern == "rainbow"){
+    rb_band <- sample(15:20, 1)
+    rb_start <- sample(seq(250,350, 5), 1)
+    
+    rb_colors <- c("#FF0000", "#FF8800", "#FFFF00", "#00FF00", "#0000FF", "#8800FF", "#FF00FF")
+
+    rb_x_max <- max(dino_silho3$x, na.rm = TRUE)
+
+    rb_center_x <- floor(runif(1, min = rb_x_min, max = rb_x_max))
+    rb_center_y <- 0.35 * abs(rb_center_x - rb_x_max/2) - 20 #20 knocks the center down a bit
+    
+    dino_silho4 <- dino_silho3 %>% 
+      select(Line, Chart, x, y) %>% 
+      group_by(Chart) %>% 
+      mutate(p_dist = ((x - rb_center_x)^2 + (y - rb_center_y)^2)^(1/2)) %>% 
+      ungroup() %>% 
+      mutate(color = case_when(
+        Chart == " Original" ~ "#CCCCCC",
+        p_dist < rb_start ~ sel_color[1],
+        p_dist < rb_start + rb_band*1 ~ rb_colors[7],
+        p_dist < rb_start + rb_band*2 ~ rb_colors[6],
+        p_dist < rb_start + rb_band*3 ~ rb_colors[5],
+        p_dist < rb_start + rb_band*4 ~ rb_colors[4],
+        p_dist < rb_start + rb_band*5 ~ rb_colors[3],
+        p_dist < rb_start + rb_band*6 ~ rb_colors[2],
+        p_dist < rb_start + rb_band*7 ~ rb_colors[1],
+        TRUE ~ sel_color[1]
+      )) 
+    
+    dino_silho5 <- dino_silho4
+    
+    #Save pattern details
+    pattern_specs <- list(pattern = "rainbow", center = c(rb_center_x, rb_center_y))
   }
   if(pattern == "hearts"){
     
