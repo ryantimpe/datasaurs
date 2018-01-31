@@ -36,6 +36,7 @@ pattern_list <- c("spotted" = 40, #For now, Spotted should always be ~50%... eve
                   "geometric" = 20, 
                   "dotted" = 20, 
                   "diamond" = 20,
+                  "hearts" = 1, #Rare except valentines day
                   "america" = 0.1 #Super rare except for US patriotic holidays
                   )
 pattern <- sample(names(pattern_list), 1, prob = pattern_list)
@@ -90,6 +91,27 @@ if((months.Date(Sys.Date()) == "January"  && lubridate::day(Sys.Date()) == 1) ||
     pattern <- sample(names(pattern_list), 1, prob = pattern_list)
   }
 }
+#Valentines Day ----
+valentinesaur <- FALSE
+if((months.Date(Sys.Date()) == "February"  && lubridate::day(Sys.Date()) == 14)){
+  valentinesaur <- sample(c(TRUE, FALSE), 1, prob = c(1, 0)) # 100% of valenties
+  
+  valentine_red <- sample(c("back", "fore"), 1, prob = c(1, 1))
+  if(valentine_red == "back"){
+    col1 <- "Red"
+    
+    col2_list <- c("Red" = 10, "Blue" = 2, "Gold" = 10, "Dark" = 5)
+    col2 <- sample(names(col2_list), 1, prob = col2_list)
+  } else {
+    col1_list <- c("Green" = 10, "Gold" = 5, "Dark" = 5)
+    col1 <- sample(names(col1_list), 1, prob = col1_list)
+    
+    col2 <- "Red"
+  }
+  
+  pattern <- "hearts"
+}
+
 
 #RUN ----
 datasaur_run <- datasaur(dino_name, col1 = col1, col2 = col2, pattern = pattern)
@@ -118,6 +140,7 @@ datasaur_text <- gsub(", not elsewhere classified", "", datasaur_text)
 datasaur_text <- gsub(", including symptomatic,", "", datasaur_text)
 datasaur_text <- gsub(" symptoms, signs and", "", datasaur_text)
 datasaur_text <- gsub(" and certain disorders involving the immune mechanism", "", datasaur_text)
+datasaur_text <- gsub("hiv", "HIV", datasaur_text)
 
 # if(nchar(datasaur_text) > 135){
 #   datasaur_text <- substr(datasaur_text, 1, 135)
@@ -130,7 +153,7 @@ if(nchar(datasaur_text) < 175){
   dino_hashes <- c("#rstats" = 2, 
                    #"#dinosaurs" = 5, "#dinos" = 2, 
                    "#dataviz" = 5, "#dataisbeautiful" = 2, 
-                   "#machinelearning" = 3, "#datascience" = 4,
+                   "#machinelearning" = 3, "#datascience" = 4, "#analytics" = 1,
                    "#science" = 2, "#statistics" = 2,
                    "#paleontology" = 2, "#paleobiology" = 2, 
                    "#bioinformatics" = 3)
@@ -154,6 +177,7 @@ if(nchar(datasaur_text) < 175){
                          #Additional hashtags
                          if(holidatasaur){"#Holidatasaur"}, 
                          if(pattern == "america"){"#Americasaur"},
+                         if(valentinesaur){"#Valentinesaur"},
                          if(newyearsaur){paste("#HappyNewYears", paste0("#NY", lubridate::year(Sys.Date()+1)))} # +1 to account for NYE
                          )
 }
