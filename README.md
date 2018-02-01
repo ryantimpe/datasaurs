@@ -2,6 +2,10 @@
 
 Twitter bot redrawing extinct animals using US cause of death time series data.
 
+<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">Marasuchus: 0.82 correlation with US deaths from diseases of the musculoskeletal system and connective tissue (Age 35-44) <a href="https://twitter.com/hashtag/rstats?src=hash&amp;ref_src=twsrc%5Etfw">#rstats</a> <a href="https://t.co/lojx2w5H7G">pic.twitter.com/lojx2w5H7G</a></p>&mdash; Datasaurs (@Datasaurs) <a href="https://twitter.com/Datasaurs/status/958868310841536512?ref_src=twsrc%5Etfw">February 1, 2018</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
 ## Getting Started
 
 Datasaurs draws an image by replacing the dorsal outline of an extinct animal with a highly correlated cause of death time series.  
