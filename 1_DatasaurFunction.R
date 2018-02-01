@@ -56,7 +56,7 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     filter(value > 0.5) #clean up noise, retaining only more that 50% transparent cells
   
   #Boolean to invert the drawing along x axis
-  invert <- sample(c(TRUE, FALSE), 1, prob = c(1, 2))
+  invert <- sample(c(TRUE, FALSE), 1, prob = c(1, 1))
   if(invert){
     dino_long$x <- max(dino_long$x, na.rm=T) - dino_long$x + 1
   }
@@ -500,6 +500,44 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     
     #Save pattern details
     pattern_specs <- list(pattern = "hearts", group_radius = group_radius)
+  }
+  if(pattern == "feathered"){
+    fthr_radius <- 5
+    group_radius <- sample(seq(50, 100, 5), 1)
+    
+    fthr_direction <- runif(1, -2, 2) #Negatives slope up, <1 is flatter, >1 is steeper
+    
+    dino_silho4 <- dino_silho3 %>% 
+      select(Line, Chart, x, y) %>%
+      mutate(group_x = x %/% group_radius, 
+             group_y = y %/% group_radius) %>% 
+      #Calculate Feather Direction... compare #x to #y
+      group_by(Chart, group_x, group_y, x) %>% 
+      mutate(y_in_group = n()) %>% 
+      ungroup() %>% 
+      group_by(Chart, group_x, group_y, y) %>% 
+      mutate(x_in_group = n()) %>% 
+      ungroup() %>% 
+      group_by(Chart, group_x, group_y) %>% 
+      # mutate(max_x_in_group = max(x_in_group, na.rm=TRUE),
+      #        max_y_in_group = max(y_in_group, na.rm=TRUE)) %>% 
+      mutate(fthr_x = max(y_in_group, na.rm=TRUE) / max(x_in_group, na.rm=TRUE),
+             fthr_y = 1 / fthr_x) %>% 
+      mutate(fthr_cat = (fthr_x*x + fthr_y*(y)*2) %/% fthr_radius + 1) %>% 
+      mutate(fthr_rank = fthr_cat %% 6) %>%
+      ungroup() %>% 
+      mutate(fthr_shift = (group_x*group_y) %% 6) %>% 
+      mutate(color = case_when(
+        Chart == " Original" ~ "#CCCCCC",
+        fthr_rank == fthr_shift ~ sel_color[2],
+        TRUE ~ sel_color[1]
+      )) 
+    
+    dino_silho5 <- dino_silho4
+    
+    #Save pattern details
+    pattern_specs <- list(pattern = "feathered")
+    
   }
 
   ###
