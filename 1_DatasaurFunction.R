@@ -56,7 +56,7 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     filter(value > 0.5) #clean up noise, retaining only more that 50% transparent cells
   
   #Boolean to invert the drawing along x axis
-  invert <- sample(c(TRUE, FALSE, FALSE), 1)
+  invert <- sample(c(TRUE, FALSE), 1, prob = c(1, 2))
   if(invert){
     dino_long$x <- max(dino_long$x, na.rm=T) - dino_long$x + 1
   }
