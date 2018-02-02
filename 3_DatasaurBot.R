@@ -134,7 +134,7 @@ if((months.Date(Sys.Date()) == "June")){
 }
 #RUN ----
 datasaur_run <- datasaur(dino_name, col1 = col1, col2 = col2, pattern = pattern)
-# datasaur_run
+datasaur_run
 
 ####
 # Tweet it ---- 
@@ -149,8 +149,17 @@ setup_twitter_oauth(consumer_key = api_keys$consumer_key,
                     access_secret = api_keys$access_secret)
 
 #Save Datasaur
+twit.width  <- 1024 #pixels
+twit.height <-512 #pixels
+twit.dpi <- 300
+
+twit.width <- twit.width / twit.dpi
+twit.height <- twit.height / twit.dpi
+
 datasaur_filepath <- paste0("BotRuns/v0p2 ", substr(Sys.time(), 1, 13),".png")
-ggsave(filename = datasaur_filepath, plot = datasaur_run[[1]])
+
+ggsave(filename = datasaur_filepath, plot = datasaur_run[[1]],
+       width = twit.width*3, height = twit.height*3)
 
 datasaur_text <- paste0(dino_name, ": ", round(datasaur_run[[4]], 2), " correlation with US deaths from ", tolower(datasaur_run[[2]]), " (", datasaur_run[[3]], ")")
 

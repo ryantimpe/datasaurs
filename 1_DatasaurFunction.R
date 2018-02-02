@@ -204,11 +204,14 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     mutate(Chart = ifelse(Line == "value_act", " Original", "Datasaur"))
 
   #Minimum Y for additional overwrites
-  min_cod_y <- dino_cor %>% 
+  min_cod_y <- dino_cor %>%
     filter(Line == "value_cod")
   min_cod_y <- min(min_cod_y$value, na.rm=T) - max(25, as.numeric(dino_silho[1, "adjust"]))
     
   dino_silho3 <- dino_silho2 %>% 
+    # group_by(Chart, x %/% 20) %>%
+    # mutate(min_cod_y = min(value, na.rm+TRUE) - max(25, as.numeric(dino_silho[1, "adjust"]))) %>% 
+    # ungroup() %>% 
     filter(!(Line == "value_cod" & y < min_cod_y)) %>% 
     bind_rows(dino_silho2 %>%
                 filter((Line == "value_act" & y < min_cod_y)) %>%
@@ -573,6 +576,14 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
   ###
   # PLOT! ----
   ###
+  dim.x <- max(dino_silho5$x, na.rm = TRUE)
+  dim.y <- max(dino_silho5$y, na.rm = TRUE)
+  
+  if(dim.x > 1.9*dim.y){
+    facet_orientation <- "vertical"
+  } else {
+    facet_orientation <- "horizontal"
+  }
 
   #Annual X labels... 
   #TODO: clean this
@@ -590,8 +601,15 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     scale_fill_identity() +
     geom_raster(data=dino_alpha, aes(x=x, y=y, alpha = alpha), fill = "#111111")+
     scale_alpha_identity() + 
-    coord_equal() +
-    facet_grid(Chart ~.) +
+    coord_equal() 
+  
+  if(facet_orientation == "vertical"){
+    chart <- chart + facet_grid(Chart ~.)
+  } else {
+    chart <- chart + facet_grid(.~Chart)
+  }
+  
+  chart <- chart +
     scale_y_continuous(limits=c(0, NA), breaks = NULL, 
                        name = paste0("US Cause of Death:", "\n", 
                                      wrapper(as.character(corrs[1, "Series"]), 60), "\n",
