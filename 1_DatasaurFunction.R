@@ -617,7 +617,7 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     scale_x_continuous(labels = xlabs$YM, breaks = xlabs$x, name = NULL) +
     labs(title = paste0(dino_name),
          caption = paste(dino_name, "by", as.character(info$Credit[1]), 
-                         "| Cause of death data from CDC.gov", "\n", "@Datasaurs v0.2.5")) +
+                         "| Cause of death data from CDC.gov", "\n", "@Datasaurs v0.2.6")) +
     theme_minimal()+
     theme(legend.position = "none",
           panel.grid.major.y = element_blank(),

@@ -134,7 +134,7 @@ if((months.Date(Sys.Date()) == "June")){
 }
 #RUN ----
 datasaur_run <- datasaur(dino_name, col1 = col1, col2 = col2, pattern = pattern)
-datasaur_run
+# datasaur_run
 
 ####
 # Tweet it ---- 
