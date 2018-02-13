@@ -547,7 +547,7 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
   # Alpha layer ----
   ###
   sel_alpha <- sample(2:9, 1)/10
-  sel_alpha_y <- sample(3:8, 1)
+  sel_alpha_y <- sample(5:10, 1) #increase minimum to reduce jump-off points
   
   sel_alpha_radius <- sample(seq(20, 100, 5), 1)
     
@@ -612,7 +612,7 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
   chart <- chart +
     scale_y_continuous(limits=c(0, NA), breaks = NULL, 
                        name = paste0("US Cause of Death:", "\n", 
-                                     wrapper(as.character(corrs[1, "Series"]), 60), "\n",
+                                     wrapper(as.character(corrs[1, "Series"]), 50), "\n",
                                     " (", as.character(corrs[1, "Detail"]), ")")) +
     scale_x_continuous(labels = xlabs$YM, breaks = xlabs$x, name = NULL) +
     labs(title = paste0(dino_name),
