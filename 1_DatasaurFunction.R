@@ -493,6 +493,7 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     rb_colors <- c("#FF0000", "#FF8800", "#FFFF00", "#00FF00", "#0000FF", "#8800FF", "#FF00FF")
 
     rb_x_max <- max(dino_silho3$x, na.rm = TRUE)
+    rb_x_min <- min(dino_silho3$x, na.rm = TRUE)
 
     rb_center_x <- floor(runif(1, min = rb_x_min, max = rb_x_max))
     rb_center_y <- 0.35 * abs(rb_center_x - rb_x_max/2) - 20 #20 knocks the center down a bit
