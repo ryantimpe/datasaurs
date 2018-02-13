@@ -373,7 +373,9 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     dot_sizes <- sample(1:5, 1)
     dot_radius <- sample(seq(5, 42), dot_sizes)/100
     
+    #Alpha parameters
     y_weight <- sample(2:10, 1)
+    radius_overflow <- 1+runif(1, 0.05, 0.30)
     
     dino_silho4 <- dino_silho3 %>% 
       select(Line, Chart, x, y) %>% 
@@ -399,7 +401,7 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
       filter(Chart == "Datasaur") %>% 
       mutate(m_n_dot = max(n_dot)) %>% 
       group_by(Chart, group_x, group_y) %>% 
-      mutate(in_circle = p_dist <  dot_radius[p_dot+1]*group_radius*n_dot/m_n_dot) %>% 
+      mutate(in_circle = p_dist <  (dot_radius[p_dot+1]*group_radius*n_dot/m_n_dot)*radius_overflow) %>% 
       mutate(alpha = case_when(
         in_circle ~ ((x-median(x))^2 + (y-median(y))^2)^(1/2),
         TRUE ~ 0
