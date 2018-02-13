@@ -31,10 +31,11 @@ col2_list <- c("Green" = 95, "Blue" = 5, "Gold" = 3, "Dark" = 2)
 col2 <- sample(names(col2_list), 1, prob = col2_list)
 
 #Pattern!
-pattern_list <- c("spotted" = 40, #For now, Spotted should always be ~50%... even when you get excited about adding a new pattern
+pattern_list <- c("spotted" = 50, #For now, Spotted should always be ~50%... even when you get excited about adding a new pattern
                   "striped" = 20, 
                   "geometric" = 20, 
                   "dotted" = 20, 
+                  "3dotted" = 20,
                   "diamond" = 20,
                   "hearts" = 1, #Rare except valentines day,
                   "rainbow" = 0.1, #Super rare except for June... then less rare

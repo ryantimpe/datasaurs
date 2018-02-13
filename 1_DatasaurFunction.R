@@ -368,6 +368,55 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     pattern_specs <- list(pattern = "dotted", group_radius = group_radius, 
                           dot_radius = dot_radius)
   }
+  if(pattern == "3dotted"){
+    group_radius <- sample(seq(20, 150, 5), 1)
+    dot_sizes <- sample(1:5, 1)
+    dot_radius <- sample(seq(5, 42), dot_sizes)/100
+    
+    y_weight <- sample(2:10, 1)
+    
+    dino_silho4 <- dino_silho3 %>% 
+      select(Line, Chart, x, y) %>% 
+      mutate(group_x = x %/% group_radius, 
+             group_y = y %/% group_radius) %>% 
+      group_by(Chart, group_x, group_y) %>% 
+      mutate(p_dot  = (group_x + group_y) %% dot_sizes,
+             n_dot = n(),
+             x_mid = median(x, na.rm=TRUE), 
+             y_mid = median(y, na.rm=TRUE)) %>% 
+      mutate(p_dist = ((x-x_mid)^2 + (y-y_mid)^2)^(1/2)) %>% 
+      ungroup() %>% 
+      mutate(color = case_when(
+        Chart == " Original" ~ "#CCCCCC",
+        p_dist <  dot_radius[p_dot+1]*group_radius*n_dot/max(n_dot) ~ sel_color[2],
+        p_dist >= dot_radius[p_dot+1]*group_radius*n_dot/max(n_dot) ~ sel_color[1],
+        TRUE ~ "#CCCCCC"
+      )) 
+    
+    dino_silho5 <- dino_silho4
+    
+    dino_alpha <- dino_silho5 %>% 
+      filter(Chart == "Datasaur") %>% 
+      mutate(m_n_dot = max(n_dot)) %>% 
+      group_by(Chart, group_x, group_y) %>% 
+      mutate(in_circle = p_dist <  dot_radius[p_dot+1]*group_radius*n_dot/m_n_dot) %>% 
+      mutate(alpha = case_when(
+        in_circle ~ ((x-median(x))^2 + (y-median(y))^2)^(1/2),
+        TRUE ~ 0
+      )) %>% 
+      ungroup() %>% 
+      mutate(alpha = case_when(
+        !in_circle ~ 1 - (x+y_weight*y)/(max(x)+y_weight*max(y)),
+        TRUE ~ alpha^(3/2)
+      )) %>% 
+      group_by(in_circle) %>% 
+      mutate(alpha = alpha / max(alpha, na.rm=TRUE) * 0.8) %>% 
+      ungroup()
+    
+    #Save pattern details
+    pattern_specs <- list(pattern = "3dotted", group_radius = group_radius, 
+                          dot_radius = dot_radius)
+  }
   if(pattern == "geometric"){
     stripe_radius <- sample(seq(10, 100, 5), 1)
     
@@ -546,28 +595,31 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
   ###
   # Alpha layer ----
   ###
-  sel_alpha <- sample(2:9, 1)/10
-  sel_alpha_y <- sample(5:10, 1) #increase minimum to reduce jump-off points
-  
-  sel_alpha_radius <- sample(seq(20, 100, 5), 1)
+  if(!(pattern %in% c("3dotted"))){
+    sel_alpha <- sample(2:9, 1)/10
+    sel_alpha_y <- sample(5:10, 1) #increase minimum to reduce jump-off points
     
-  dino_alpha <- dino_silho5 %>% 
-    filter(Chart == "Datasaur") %>% 
-    group_by(x %/% sel_alpha_radius) %>% 
-    mutate(alpha_y = (1- y / max(y, na.rm = TRUE))) %>% 
-    ungroup() %>% 
-    mutate(alpha_x = (1 - x / max(x, na.rm = TRUE))) %>%
-    group_by(x+y %/% sel_alpha_radius) %>%
-    mutate(alpha_xy = (1 - (x+y) / max((x+y), na.rm = TRUE))) %>%
-    ungroup() %>%
-    mutate(alpha = (alpha_x  + sel_alpha_y*alpha_y )/(sel_alpha_y+2) * sel_alpha) %>% 
-    group_by(y) %>%
-    mutate(alpha2 = (lag(alpha, 2) + lag(alpha, 1) + alpha + lead(alpha, 1) + lead(alpha, 2))/5,
-           alpha2 = ifelse(is.na(alpha2), alpha, alpha2)
-    ) %>%
-    ungroup() %>%
-    select(-alpha) %>%
-    rename(alpha = alpha2)
+    sel_alpha_radius <- sample(seq(20, 100, 5), 1)
+    
+    dino_alpha <- dino_silho5 %>% 
+      filter(Chart == "Datasaur") %>% 
+      group_by(x %/% sel_alpha_radius) %>% 
+      mutate(alpha_y = (1- y / max(y, na.rm = TRUE))) %>% 
+      ungroup() %>% 
+      mutate(alpha_x = (1 - x / max(x, na.rm = TRUE))) %>%
+      group_by(x+y %/% sel_alpha_radius) %>%
+      mutate(alpha_xy = (1 - (x+y) / max((x+y), na.rm = TRUE))) %>%
+      ungroup() %>%
+      mutate(alpha = (alpha_x  + sel_alpha_y*alpha_y )/(sel_alpha_y+2) * sel_alpha) %>% 
+      group_by(y) %>%
+      mutate(alpha2 = (lag(alpha, 2) + lag(alpha, 1) + alpha + lead(alpha, 1) + lead(alpha, 2))/5,
+             alpha2 = ifelse(is.na(alpha2), alpha, alpha2)
+      ) %>%
+      ungroup() %>%
+      select(-alpha) %>%
+      rename(alpha = alpha2)
+  }
+  
   
   #Place holder for additional edits
   dino_cor2 <- dino_cor 
