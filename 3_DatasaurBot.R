@@ -31,11 +31,11 @@ col2_list <- c("Green" = 95, "Blue" = 5, "Gold" = 3, "Dark" = 2)
 col2 <- sample(names(col2_list), 1, prob = col2_list)
 
 #Pattern!
-pattern_list <- c("spotted" = 50, #For now, Spotted should always be ~50%... even when you get excited about adding a new pattern
+pattern_list <- c("spotted" = 40, #For now, Spotted should always be ~50%... even when you get excited about adding a new pattern
                   "striped" = 20, 
                   "geometric" = 20, 
                   "dotted" = 20, 
-                  "3dotted" = 20,
+                  "3dotted" = 30,
                   "diamond" = 20,
                   "hearts" = 1, #Rare except valentines day,
                   "rainbow" = 0.1, #Super rare except for June... then less rare
@@ -69,7 +69,7 @@ americasaur_dates <- c("#PresidentsDay" = "2018-02-19", "#FlagDay" = "2018-06-14
                  "#IndependenceDay" = "2019-07-04", "#VeteransDay" = "2019-11-11"
                  )
 americasaur <- FALSE
-if(Sys.Date() %in% americasaur_dates){
+if(as.character(Sys.Date()) %in% americasaur_dates){
   americasaur <- sample(c(TRUE, FALSE), 1, prob = c(0.75, 0.25)) #75% chance on US patriot holidays
   if(americasaur){pattern <- "america"}
 }
@@ -124,7 +124,7 @@ if((months.Date(Sys.Date()) == "March" && lubridate::day(Sys.Date()) == 17)){
     pattern <- "rainbow"
   }
 }
-# JUNE --> ST Patricks Day ----
+# JUNE --> PRIDE (Dark + Rainbow) ----
 pridesaur <- FALSE
 if((months.Date(Sys.Date()) == "June")){
   pridesaur <- sample(c(TRUE, FALSE), 1, prob = c(1, 9)) # Chance of Pride datasaur in June
