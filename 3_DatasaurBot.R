@@ -70,7 +70,7 @@ americasaur_dates <- c("#PresidentsDay" = "2018-02-19", "#FlagDay" = "2018-06-14
                  )
 americasaur <- FALSE
 if(as.character(Sys.Date()) %in% americasaur_dates){
-  americasaur <- sample(c(TRUE, FALSE), 1, prob = c(0.75, 0.25)) #75% chance on US patriot holidays
+  americasaur <- sample(c(TRUE, FALSE), 1, prob = c(1, 0)) #75% chance on US patriot holidays
   if(americasaur){pattern <- "america"}
 }
 
@@ -185,7 +185,9 @@ if(nchar(datasaur_text) < 175){
                    "#machinelearning" = 3, "#datascience" = 4, "#analytics" = 1,
                    "#science" = 2, "#statistics" = 2,
                    "#paleontology" = 2, "#paleobiology" = 2, 
-                   "#bioinformatics" = 3)
+                   "#bioinformatics" = 3,
+                   "#JurassicWorld" = 5, "#FallenKingdom" = 5,
+                   "#JurassicPark" = 5)
   
   dname_hash <- 6
   names(dname_hash) <- dname
