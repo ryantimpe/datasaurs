@@ -187,19 +187,19 @@ if(nchar(datasaur_text) < 175){
                    "#paleontology" = 2, "#paleobiology" = 2, 
                    "#bioinformatics" = 3,
                    "#JurassicWorld" = 5, "#FallenKingdom" = 5,
-                   "#JurassicPark" = 5)
+                   "#JurassicPark" = 3, "#JurassicPark25" = 3)
   
   dname_hash <- 6
   names(dname_hash) <- dname
   dino_hashes <- c(dino_hashes, dname_hash)
   
   if(weekdays(Sys.Date()) == "Friday"){
-    dino_hashes <- c("#FossilFriday" = 80, #Very High Chance of #FossilFriday 
+    dino_hashes <- c("#FossilFriday" = 50, #Very High Chance of #FossilFriday 
                      dino_hashes)
   }
   
   if(months.Date(Sys.Date()) == "November"){
-    dino_hashes <- c("#Dinovember" = 50, #High chance of #Dinovember
+    dino_hashes <- c("#Dinovember" = 30, #High chance of #Dinovember
                      dino_hashes)
   }
   
