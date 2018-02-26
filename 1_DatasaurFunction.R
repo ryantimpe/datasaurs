@@ -376,6 +376,8 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     #Alpha parameters
     y_weight <- sample(2:10, 1)
     radius_overflow <- 1+runif(1, 0.05, 0.30)
+    x_offset <- round(runif(1, -group_radius, group_radius)/10)
+    y_offset <- round(runif(1, -group_radius, group_radius)/10)
     
     dino_silho4 <- dino_silho3 %>% 
       select(Line, Chart, x, y) %>% 
@@ -403,7 +405,7 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
       group_by(Chart, group_x, group_y) %>% 
       mutate(in_circle = p_dist <  (dot_radius[p_dot+1]*group_radius*n_dot/m_n_dot)*radius_overflow) %>% 
       mutate(alpha = case_when(
-        in_circle ~ ((x-median(x))^2 + (y-median(y))^2)^(1/2),
+        in_circle ~ ((x-median(x)+x_offset)^2 + (y-median(y)+y_offset)^2)^(1/2),
         TRUE ~ 0
       )) %>% 
       ungroup() %>% 
@@ -417,7 +419,7 @@ datasaur <- function(dino_name, col1 = "Green", col2 = "Green", pattern = "spott
     
     #Save pattern details
     pattern_specs <- list(pattern = "3dotted", group_radius = group_radius, 
-                          dot_radius = dot_radius)
+                          dot_radius = dot_radius, offset = c(x_offset, y_offset))
   }
   if(pattern == "geometric"){
     stripe_radius <- sample(seq(10, 100, 5), 1)
