@@ -5,6 +5,8 @@
 
 library(png);library(tidyverse);
 library(lubridate)
+library(scales)
+library(zoo)
 
 cod_all <- readRDS("BotInputs/D1_CauseOfDeath.RDS")
 colorChoices <- read.csv("BotInputs/Colors.csv", stringsAsFactors = F)
@@ -17,7 +19,7 @@ wrapper <- function(x, ...) {paste(strwrap(x, ...), collapse = "\n")}
 
 #Datasaur function will go here...
 
-dino_name <- "Hoffstetterius"
+dino_name <- "Allosaurus"
 
 dino_raw <- readPNG(paste0("PhyloPic/", dino_name,".png"))
 
@@ -112,6 +114,36 @@ dino_cor <- dino_line %>%
   mutate(Chart = " Original")
 
 
+###
+#Create new silhouette of dino
+#This part is sloppy
+###
+
+#Smooth the monthly times series
+dino_rejig <- dino_cor %>% 
+  spread(Line, value) %>% 
+  select(x, value_act, value_cod) %>% 
+  fill(value_cod) %>% 
+  mutate(value_cod2 = zoo::rollmean(value_cod, 20, fill=NA)) %>% 
+  mutate(value_cod = ifelse(is.na(value_cod2), value_cod, value_cod2)) %>% 
+  select(-value_cod2)
+
+#Rotate the Datasaur so the body hits both the start and end of line
+dino_silho <- dino_long %>% 
+  arrange(x, desc(y)) %>% 
+  left_join(dino_rejig) %>% 
+  select(-value) %>% 
+  mutate(first = x[min(which(!is.na(value_cod)))],
+         last = x[max(which(!is.na(value_cod)))]) %>% 
+  fill(value_cod) %>% 
+  mutate(value_cod = ifelse(x >= first & x <= last, value_cod, value_act)) %>% 
+  #Deltas for twisting first and last
+  mutate(twist_front = ifelse(x == first, value_cod - value_act, NA),
+         twist_front = max(twist_front, na.rm=TRUE),
+         twist_back  = ifelse(x == last, value_cod - value_act, NA),
+         twist_back  = max(twist_back, na.rm=TRUE)) %>% 
+  mutate(share_back = (x-1) / (last - first)) %>% 
+  mutate(twist = (1-share_back)*twist_front + (share_back)*twist_back)
 
 
 
