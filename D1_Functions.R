@@ -2,7 +2,7 @@ library(png);library(tidyverse);
 library(lubridate)
 library(scales)
 library(zoo)
-library(gridExtra)
+library(grid); library(gridExtra)
 
 #Text wrapping function
 wrapper <- function(x, ...) {paste(strwrap(x, ...), collapse = "\n")}
@@ -730,13 +730,11 @@ plot_datasaur <- function(skin_datasaur0){
     geom_raster(data=shadow_datasaur %>% filter(Chart == "Datasaur"), 
                 aes(x=x, y=y, alpha = alpha), fill = "#111111")+
     scale_alpha_identity() +
-    scale_y_continuous(limits=c(0, NA), breaks = NULL, 
-                       name = paste0("US Cause of Death:", "\n", 
-                                     wrapper(as.character(corrs[1, "Series"]), 50), "\n",
-                                     " (", as.character(corrs[1, "Detail"]), ")")) +
-    labs(title = paste0(dino_name),
-         caption = paste(dino_name, "by", as.character(info$Credit[1]), 
-                         "| Cause of death data from CDC.gov", "\n", "@Datasaurs v1.0.0")) +
+    scale_y_continuous(limits=c(0, NA), breaks = NULL) +
+    coord_equal() +
+    # labs(title = paste0(dino_name),
+    #      caption = paste(dino_name, "by", as.character(info$Credit[1]), 
+    #                      "| Cause of death data from CDC.gov", "\n", "@Datasaurs v1.0.0")) +
     theme_minimal() +
     theme(legend.position = "none",
           panel.grid.major.x = element_blank(),
@@ -746,8 +744,8 @@ plot_datasaur <- function(skin_datasaur0){
           plot.background = element_rect(fill = "#FFFFFF", color = "#FFFFFF"),
           axis.text.x = element_blank(),
           axis.title.x = element_blank(),
-          axis.title.y = element_text(size = 14, color="#DA1B10"),
-          plot.title = element_text(size = 20, face="bold.italic")
+          axis.title.y = element_blank(),
+          plot.title = element_blank()
     )
   
   ##
@@ -756,30 +754,29 @@ plot_datasaur <- function(skin_datasaur0){
   
   #If chart isn't too long, inset goes next to datasaur
     #Lowest x that doesnt have <y in it
-    ins_x_low <- line_chart_data %>% 
-      filter(value > max(value, na.rm=TRUE)/2) %>% 
-      pull(x) %>% 
-      min()
-    
-    ins_y_low <- line_chart_data %>% 
-      filter(x < 400*1.1) %>% 
-      pull(value) %>% 
-      min()
-    
-    ins_x <- c(ins_x_low-400-1, ins_x_low-1)
-    ins_y <- round(max(line_chart_data$value)*c(0, 0.75)) + ins_y_low
-    
-    comb_chart <- main_chart +
-      coord_equal(xlim = c(ins_x_low-400-1, max(line_chart_data$x)+20),
-                  ylim = c(0-ins_y[2], max(line_chart_data$value)+20), 
-                  expand=FALSE) +
-      annotation_custom(
-        grob = ggplotGrob(inset_chart),
-        xmin = ins_x[1],
-        xmax = ins_x[2],
-        ymin = -ins_y[2],
-        ymax = ins_y[1]
-      )
+  
+  # if(max(line_chart_data$x, na.rm=TRUE) < 1.9*max(line_chart_data, na.rm=TRUE)){
+  #   lmat <- rbind(c(1, NA), c(2, 2))
+  # } else {
+  #   lmat <- rbind(c(1, 2), c(NA, 2))
+  # }
+  lmat <- rbind(c(1, NA), c(2, 2))
+  
+    comb_chart <- grid.arrange(
+      grobs = list(inset_chart,
+                   main_chart),
+      widths = c(2, 1),
+      heights = c(1, 2),
+      layout_matrix = lmat,
+      top = textGrob(dino_name, gp=gpar(fontsize=20, fontface = "bold"), 
+                     x = 0, just = "left"),
+      left = paste0("US Cause of Death:", "\n", 
+                    wrapper(as.character(corrs[1, "Series"]), 50), "\n",
+                    " (", as.character(corrs[1, "Detail"]), ")"),
+      bottom = textGrob(paste(dino_name, "by", as.character(info$Credit[1]), 
+                     "| Cause of death data from CDC.gov", "\n", "@Datasaurs v1.0.0"),
+                     x = 1, just = "right")
+    )
   
   
   return(comb_chart)

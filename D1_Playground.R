@@ -18,14 +18,8 @@ dino_name <- sample(dino_info$Fauna, 1)
 
 test_saur <- dino_name %>% 
   naked_datasaur() %>% 
-  skin_datasaur(choose_pattern(col1_set = "Blue", col2_set = "Gold")) 
-
-skin_datasaur0 <- test_saur
-skin_datasaur0$color
-
-test_saur %>% 
+  skin_datasaur(choose_pattern(col1_set = "Blue", col2_set = "Gold")) %>% 
   plot_datasaur()
 
-
-View(test_saur2$skin_datasaur)
+test_saur
 
