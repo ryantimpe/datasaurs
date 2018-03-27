@@ -814,7 +814,7 @@ plot_datasaur <- function(skin_datasaur0){
   cod_details <- arrangeGrob(
     grobs = list(
       #Corrlations
-      textGrob(paste0(round(as.numeric(corrs[1, "cor"])*100, 0), "% "),
+      textGrob(paste0(round(as.numeric(corrs[1, "cor"]), 2), " "),
                gp = gpar(fontsize=24, fontface = "bold", col = "#FC3D32"),
                x = unit(0, "npc"), y = unit(.9, "npc"),
                just ="left"
@@ -890,7 +890,7 @@ text_datasaur <- function(plot_datasaur0){
   corrs <- corrs %>% 
     left_join(map_cod_detail, by = "Detail")
   
-  text_cor <- paste0(round(as.numeric(corrs[1, "cor"])*100, 0), "%")
+  text_cor <- paste0(round(as.numeric(corrs[1, "cor"]), 2), "")
   text_cod <- paste0("correlation with U.S. deaths by ",
                     as.character(corrs[1, "Series"]), 
                     " in ", as.character(corrs[1, "Detail_print"]), ".")
