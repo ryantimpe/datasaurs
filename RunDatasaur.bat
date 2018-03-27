@@ -1,1 +1,1 @@
-start "" "C:\Program Files\R\R-3.4.1\bin\R.exe" CMD BATCH "F:\__RT Docs\Dino8\3_DatasaurBot.R"
+start "" "C:\Program Files\R\R-3.4.1\bin\R.exe" CMD BATCH "F:\__RT Docs\Datasaurs\D1_RunBot.R"

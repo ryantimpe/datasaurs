@@ -247,7 +247,7 @@ naked_datasaur <- function(dino_name){
   
   #Minimum Y for additional overwrites
   min_cod_y <- dino_cor %>%
-    group_by(x %/% 50) %>% 
+    group_by(x %/% 200) %>% 
     mutate(min_cod_y_value = min(value)) %>% 
     ungroup() %>% 
     select(Line, x, min_cod_y_value) %>% 
@@ -688,6 +688,7 @@ skin_datasaur <- function(naked_datasaur, color_pattern){
      datasaur_name = datasaur_name,
      corrs = corrs,
      color = sel_color,
+     pattern = color_pattern,
      line_chart_data = line_chart_data,
      naked_datasaur = naked_0,
      skin_datasaur = skin_1,
@@ -722,7 +723,6 @@ plot_datasaur <- function(skin_datasaur0){
   } else {
     artist_twitter <- NULL
   }
-  
   
   map_cod_detail <- read.csv("CoD/map_cod_detail.csv", stringsAsFactors = FALSE)
   corrs <- corrs %>% 
@@ -823,7 +823,7 @@ plot_datasaur <- function(skin_datasaur0){
                               as.character(corrs[1, "Series"]), 
                               "in", as.character(corrs[1, "Detail_print"])), 32),
                 gp = gpar(fontsize=16, col = "#00436b"),
-                x = unit(0, "npc"), y = unit(.8, "npc"),
+                x = unit(0, "npc"), y = unit(.7, "npc"),
                 just ="left")
       ),
     nrow = 2,
@@ -873,3 +873,86 @@ plot_datasaur <- function(skin_datasaur0){
   return(out.list)
 }
 
+#Tweet-text datasaur
+text_datasaur <- function(plot_datasaur0){
+  
+  #Features
+  datasaur_name   <- plot_datasaur0$datasaur_name
+  corrs           <- plot_datasaur0$corrs
+  pattern         <- plot_datasaur0$pattern
+  
+  #Details
+  dino_info <- read.csv("BotInputs/DatasaurList.csv", stringsAsFactors = FALSE)
+  info <- dino_info %>% 
+    filter(Fauna == datasaur_name)
+  
+  map_cod_detail <- read.csv("CoD/map_cod_detail.csv", stringsAsFactors = FALSE)
+  corrs <- corrs %>% 
+    left_join(map_cod_detail, by = "Detail")
+  
+  text_cor <- paste0(round(as.numeric(corrs[1, "cor"])*100, 0), "%")
+  text_cod <- paste0("correlation with U.S. deaths by ",
+                    as.character(corrs[1, "Series"]), 
+                    " in ", as.character(corrs[1, "Detail_print"]), ".")
+  
+  #Hashtags!
+  hashes_list <- c("#rstats" = 5, 
+                   "#dinosaurs" = 5, "#dinos" = 2, 
+                   "#dataviz" = 5, "#dataisbeautiful" = 2, "#data" = 1,
+                   "#machinelearning" = 3, "#datascience" = 4, "#analytics" = 1,
+                   "#science" = 2, "#statistics" = 2,
+                   "#paleontology" = 2, "#paleobiology" = 2, 
+                   "#bioinformatics" = 3,
+                   "#themoreyouknow"= 1,
+                   "#JurassicWorld" = 1, "#FallenKingdom" = 1,
+                   "#JurassicPark" = 1, "#JurassicPark25" = 1)
+  
+  if(weekdays(Sys.Date()) == "Friday"){
+    hashes_list <- c("#FossilFriday" = 40, #Very High Chance of #FossilFriday 
+                     hashes_list)
+  }
+  
+  if(months.Date(Sys.Date()) == "November"){
+    hashes_list <- c("#Dinovember" = 25, #High chance of #Dinovember
+                     hashes_list)
+  }
+  
+  if(sample(c(TRUE, FALSE), 1, prob = c(10, 1))){
+    text_hashtags <- paste0(sample(names(hashes_list), 1, prob = hashes_list),
+                           #Additional hashtags
+                           if(pattern$holidatasaur){" #Holidatasaur"}, 
+                           if(pattern$america){" #Americasaur"},
+                           if(pattern$valentinesaur){" #Valentinesaur"},
+                           if(pattern$stpatrick){" #StPaddatasaur"},
+                           if(pattern$pridesaur){" #PRIDEsaur"},
+                           if(pattern$newyearsaur){paste(" #HappyNewYears", 
+                                                         paste0(" #NY", lubridate::year(Sys.Date()+1)))} # +1 to account for NYE
+    )
+  } else {
+    text_hashtags <- ""
+  }
+  
+  
+  #Artist tags
+  if(as.character(info[1, "Twitter"]) != "" && !is.na(info[1, "Twitter"]) &&
+     sample(c(TRUE, FALSE), 1, prob = c(1, 15))){
+    text_twitter <- paste0("Image by @", as.character(info$Twitter[1]), ". ")
+  } else {
+    text_twitter <- ""
+  }
+  
+  #Tweet text
+  text_final <- paste0(
+    datasaur_name, ": ", text_cor, " ", text_cod, " ",
+    text_twitter, text_hashtags
+  )
+  
+  #Output
+  out.list <- c(plot_datasaur0,
+                list(
+                  twitter_text = text_final
+                ))
+  
+  return(out.list)
+
+}
