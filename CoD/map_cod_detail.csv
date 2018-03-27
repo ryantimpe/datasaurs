@@ -1,0 +1,25 @@
+Detail,Detail_print
+Age 15-24,adults age 15-24
+Age 15-54,adults age 15-54
+Age 25-34,adults age 25-34
+Age 35-44,adults age 35-44
+Age 45-54,adults age 45-54
+Age 45+,adults age 45+
+Age 5-14,children age 5-14
+Age 55-64,adults age 55-64
+Age 65-74,seniors age 65-74
+Age 75-84,seniors age 75-84
+Age 85+,seniors age 85+
+All Adults,all adults
+All Children,all children
+All,all people
+Hispanic 5+ Females,Hispanic females age 5+
+Hispanic 5+ Males,Hispanic males age 5+
+Midwest US,the Midwest region
+NonWhite 5+ Females,non-white females age 5+
+NonWhite 5+ Males,non-white males age 5+
+Northeastern US,the Northeastern region
+Southern US,the Southern region
+Western US,the Western region
+White Adult Females,white adult females
+White Adult Males,white adult males
