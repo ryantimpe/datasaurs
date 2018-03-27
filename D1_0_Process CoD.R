@@ -11,6 +11,7 @@ library(lubridate)
 
 cod_list <- list()
 cod_files <- list.files("CoD/")
+cod_files <- cod_files[!grepl("map_", cod_files, fixed = TRUE)]
 
 map_cod <- read.csv("CoD/Map_cod.csv", stringsAsFactors = F)
 

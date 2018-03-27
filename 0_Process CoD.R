@@ -11,6 +11,7 @@ library(lubridate)
 
 cod_list <- list()
 cod_files <- list.files("CoD/")
+cod_files <- cod_files[!grepl("map_", cod_files, fixed = TRUE)]
 
 for(file in cod_files){
   cod_raw <- read_delim(paste0("CoD/", file), "\t", escape_double = FALSE, trim_ws = TRUE)
