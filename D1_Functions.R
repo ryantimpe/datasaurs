@@ -232,19 +232,7 @@ naked_datasaur <- function(dino_name){
     distinct() %>% 
     filter(!is.na(y)) %>% 
     mutate(Chart = ifelse(Line == "value_act", " Original", "Datasaur"))
-  
-  # #Minimum Y for additional overwrites
-  # min_cod_y <- dino_cor %>%
-  #   filter(Line == "value_cod")
-  # min_cod_y <- min(min_cod_y$value, na.rm=T) - 25 + as.numeric(dino_silho[1, "adjust"])
-  # 
-  # dino_silho3 <- dino_silho2 %>% 
-  #   filter(!(Line == "value_cod" & y < min_cod_y)) %>% 
-  #   bind_rows(dino_silho2 %>%
-  #               filter((Line == "value_act" & y < min_cod_y)) %>%
-  #               mutate(Line = "value_cod", Chart = "Datasaur")) %>%
-  #   arrange(x, Line, desc(y))
-  
+
   #Minimum Y for additional overwrites
   min_cod_y <- dino_cor %>%
     group_by(x %/% 200) %>% 
@@ -262,6 +250,21 @@ naked_datasaur <- function(dino_name){
                 mutate(Line = "value_cod", Chart = "Datasaur")) %>%
     mutate(y = floor(y)) %>% 
     arrange(x, Line, desc(y))
+  
+  
+  #Minimum Y for additional overwrites
+  min_cod_y2 <- dino_cor %>%
+    filter(Line == "value_cod")
+  min_cod_y2 <- floor(min(min_cod_y2$value, na.rm=T) - 25 + 
+                        as.numeric(dino_silho[1, "adjust"])/2)
+  
+  dino_silho3 <- dino_silho3 %>%
+    filter(!(Line == "value_cod" & y < min_cod_y2)) %>%
+    bind_rows(dino_silho2 %>%
+                filter((Line == "value_act" & y < min_cod_y2)) %>%
+                mutate(Line = "value_cod", Chart = "Datasaur")) %>%
+    arrange(x, Line, desc(y))
+  
   
   #RETURN
   dino_silho_out <- dino_silho3 %>% 
@@ -757,7 +760,7 @@ plot_datasaur <- function(skin_datasaur0){
           plot.title = element_text(size = 20, face="bold.italic"),
           plot.background = element_rect(fill = "#FFFFE0", color = "#FFFFE0"),
           panel.background = element_rect(fill = "white", color = sel_color[1]),
-          plot.caption = element_text(color = "#00436b")
+          plot.caption = element_text(color = "#00436b", size = 10)
     )
   
   main_chart <- ggplot(line_chart_data, 
@@ -783,7 +786,7 @@ plot_datasaur <- function(skin_datasaur0){
           axis.title.x = element_blank(),
           axis.title.y = element_blank(),
           plot.title = element_blank(),
-          plot.caption = element_text(size = 11)
+          plot.caption = element_text(size = 12)
     )
   
   ##
@@ -814,7 +817,7 @@ plot_datasaur <- function(skin_datasaur0){
     grobs = list(
       #Corrlations
       textGrob(paste0(round(as.numeric(corrs[1, "cor"]), 2), " "),
-               gp = gpar(fontsize=24, fontface = "bold", col = "#FC3D32"),
+               gp = gpar(fontsize=30, fontface = "bold", col = "#FC3D32"),
                x = unit(0, "npc"), y = unit(.9, "npc"),
                just ="left"
                ),
