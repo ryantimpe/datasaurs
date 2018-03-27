@@ -131,7 +131,7 @@ naked_datasaur <- function(dino_name){
     #Slope the cut-off
     arrange(desc(x)) %>%
     mutate(x = max(x) - x + 1) %>%
-    mutate(end_start = x[min(which(is.na(value_cod) & x > max(x, na.rm=TRUE)/2))],
+    mutate(end_start = x[min(which(is.na(value_cod) && x > max(x, na.rm=TRUE)/2))],
            end_end = x[max(which(is.na(value_cod)))],
            end_end = end_start + (1/3)*(end_end - end_start)) %>%
     mutate(slope = value_cod) %>%
@@ -255,11 +255,10 @@ naked_datasaur <- function(dino_name){
   
   dino_silho3 <- dino_silho2 %>% 
     left_join(min_cod_y, by = c("Line", "x")) %>% 
-    #fill(min_cod_y_value) %>% 
-    filter(!(Line == "value_cod" & y < min_cod_y_value)) %>% 
+    filter(!(Line == "value_cod" && y < min_cod_y_value) || is.na(min_cod_y_value)) %>% 
     bind_rows(dino_silho2 %>%
                 left_join(min_cod_y, by = c("Line", "x")) %>% 
-                filter((Line == "value_act" & y < min_cod_y_value)| is.na(min_cod_y_value)) %>%
+                filter((Line == "value_act" && y < min_cod_y_value) || is.na(min_cod_y_value)) %>%
                 mutate(Line = "value_cod", Chart = "Datasaur")) %>%
     mutate(y = floor(y)) %>% 
     arrange(x, Line, desc(y))
@@ -903,7 +902,7 @@ text_datasaur <- function(plot_datasaur0){
                    "#science" = 2, "#statistics" = 2,
                    "#paleontology" = 2, "#paleobiology" = 2, 
                    "#bioinformatics" = 3,
-                   "#themoreyouknow"= 1,
+                   "#themoreyouknow"= 1, "#lifefindsaway" = 1,
                    "#JurassicWorld" = 1, "#FallenKingdom" = 1,
                    "#JurassicPark" = 1, "#JurassicPark25" = 1)
   
