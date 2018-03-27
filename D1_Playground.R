@@ -15,11 +15,8 @@ source("D1_ColorsPatterns.R")
 #Datasaur function will go here...
 
 dino_name <- sample(dino_info$Fauna, 1)
-
 test_saur <- dino_name %>% 
   naked_datasaur() %>% 
-  skin_datasaur(choose_pattern(col1_set = "Blue", col2_set = "Gold")) %>% 
+  skin_datasaur(choose_pattern()) %>% 
   plot_datasaur()
-
-test_saur
 

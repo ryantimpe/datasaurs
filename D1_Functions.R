@@ -7,7 +7,6 @@ library(grid); library(gridExtra)
 #Text wrapping function
 wrapper <- function(x, ...) {paste(strwrap(x, ...), collapse = "\n")}
 
-
 #Produce Dataframe of datasaur raster points
 naked_datasaur <- function(dino_name){
   
@@ -46,7 +45,8 @@ naked_datasaur <- function(dino_name){
   ###
   
   #Find 10 most correlated CoD series
-  corrs_ss <- sample(1:4, 1, prob = (1/(1:4))^(2))
+  # corrs_ss <- sample(1:4, 1, prob = (1/(1:4))^(2))
+  corrs_ss <- 1
   
   corrs <- dino_line %>% 
     group_by(Year, Month) %>% 
@@ -120,29 +120,35 @@ naked_datasaur <- function(dino_name){
     #Slope the cut-off
     mutate(end_start = x[min(which(is.na(value_cod) & x > max(x, na.rm=TRUE)/2))],
            end_end = x[max(which(is.na(value_cod)))],
-           end_end = end_start + (2/3)*(end_end - end_start)) %>% 
-    mutate(slope = value_cod) %>% 
-    fill(slope) %>% 
-    mutate(slope = ifelse(!is.na(value_cod) & x < end_start, NA, 
-                          slope - 100*((x - end_start) / (end_end - end_start))^(1/2))) %>% 
+           end_end = end_start + (1/3)*(end_end - end_start)) %>%
+    mutate(slope = value_cod) %>%
+    fill(slope) %>%
+    mutate(slope = ifelse(!is.na(value_cod) & x < end_start, NA,
+                          slope*((end_end - x) / (end_end - end_start))^(1/2))) %>%
     mutate(value_cod = ifelse(!is.na(value_cod), value_cod,
-      ifelse(slope > value_act, slope, NA))) %>% 
-    select(-end_start, -end_end, -slope) %>% 
+      ifelse(slope > value_act, slope, NA))) %>%
+    select(-end_start, -end_end, -slope) %>%
     #Slope the cut-off
-    arrange(desc(x)) %>% 
-    mutate(x = max(x) - x + 1) %>% 
+    arrange(desc(x)) %>%
+    mutate(x = max(x) - x + 1) %>%
     mutate(end_start = x[min(which(is.na(value_cod) & x > max(x, na.rm=TRUE)/2))],
            end_end = x[max(which(is.na(value_cod)))],
-           end_end = end_start + (2/3)*(end_end - end_start)) %>% 
-    mutate(slope = value_cod) %>% 
-    fill(slope) %>% 
-    mutate(slope = ifelse(!is.na(value_cod) & x < end_start, NA, 
-                          slope - 100*((x - end_start) / (end_end - end_start))^(1/2))) %>% 
+           end_end = end_start + (1/3)*(end_end - end_start)) %>%
+    mutate(slope = value_cod) %>%
+    fill(slope) %>%
+    mutate(slope = ifelse(!is.na(value_cod) & x < end_start, NA,
+                          slope*((end_end - x) / (end_end - end_start))^(1/2))) %>%
     mutate(value_cod = ifelse(!is.na(value_cod), value_cod,
-                              ifelse(slope > value_act, slope, NA))) %>% 
-    select(-end_start, -end_end, -slope) %>% 
-    arrange(x) %>% 
-    mutate(x = max(x) - x + 1) 
+                              ifelse(slope > value_act, slope, NA))) %>%
+    select(-end_start, -end_end, -slope) %>%
+    arrange(desc(x)) %>%
+    mutate(x = max(x) - x + 1) %>%
+    #SMooth more
+    mutate(value_cod2 = (lag(value_cod, 2) + lag(value_cod) + 
+                           value_cod*2 + 
+                           lead(value_cod) + lead(value_cod, 2))/6) %>% 
+    mutate(value_cod = ifelse(is.na(value_cod2), value_cod, value_cod2)) %>% 
+    select(-value_cod2)
   
   #Raise the CoD line if it's below the minimum y of the dino for any x
   dino_silho <- dino_long %>% 
@@ -164,7 +170,7 @@ naked_datasaur <- function(dino_name){
     mutate(adjust = ifelse(any(check), max(adjust, na.rm=T), 0),
            adjust = ifelse(is.na(adjust), 0, adjust)) %>%
     rowwise() %>% 
-    mutate(y_cod = ifelse(x >= first & x <= last, round(value_cod + adjust), value_cod)) %>% 
+    mutate(y_cod = ifelse(x >= first & x <= last, floor(value_cod + adjust), value_cod)) %>% 
     ungroup() %>% 
     select(x, y, y_cod, first, last, adjust) %>% 
     group_by(x) %>% 
@@ -208,13 +214,14 @@ naked_datasaur <- function(dino_name){
     mutate(Body_seg_max = n() - sum(is.na(value_act))) %>% 
     ungroup() %>% 
     group_by(x) %>%
-    mutate(Body_seg_check = ifelse(Body_seg_max >= 15 | Body_seg_max== max(Body_seg_max, na.rm=T), Body_seg_max, 0)) %>% 
+    mutate(Body_seg_check = ifelse(Body_seg_max >= 25 | Body_seg_max== max(Body_seg_max, na.rm=T), Body_seg_max, 0)) %>% 
     mutate(Body_seg_check2 = ifelse(Body_seg_check == Body_seg_check[min(which(Body_seg_check >0))], Body_seg_check, 0)) %>% 
     mutate(Body_seg_y = value_act[max(which(Body_seg_check2 == max(Body_seg_check2, na.rm=T)), na.rm=T)],
            Body_seg_y = ifelse(is.na(Body_seg_y), 0, Body_seg_y)) %>% 
     ungroup() %>%
-    mutate(value_cod = ifelse(value_cod > max(value_act, na.rm=T), value_cod, 
-                              ifelse(x < as.numeric(dino_silho[1, "first"]) | x > as.numeric(dino_silho[1, "last"]), value_act, value_cod))) %>% 
+    mutate(value_cod = ifelse(value_cod > max(value_act, na.rm=T), floor(value_cod), 
+                              ifelse(x < as.numeric(dino_silho[1, "first"]) | x > as.numeric(dino_silho[1, "last"]), 
+                                     value_act, floor(value_cod)))) %>% 
     #Drop appendages
     group_by(x) %>%
     mutate(value_cod = ifelse((value_cod < Body_seg_y &
@@ -226,22 +233,41 @@ naked_datasaur <- function(dino_name){
     filter(!is.na(y)) %>% 
     mutate(Chart = ifelse(Line == "value_act", " Original", "Datasaur"))
   
+  # #Minimum Y for additional overwrites
+  # min_cod_y <- dino_cor %>%
+  #   filter(Line == "value_cod")
+  # min_cod_y <- min(min_cod_y$value, na.rm=T) - 25 + as.numeric(dino_silho[1, "adjust"])
+  # 
+  # dino_silho3 <- dino_silho2 %>% 
+  #   filter(!(Line == "value_cod" & y < min_cod_y)) %>% 
+  #   bind_rows(dino_silho2 %>%
+  #               filter((Line == "value_act" & y < min_cod_y)) %>%
+  #               mutate(Line = "value_cod", Chart = "Datasaur")) %>%
+  #   arrange(x, Line, desc(y))
+  
   #Minimum Y for additional overwrites
   min_cod_y <- dino_cor %>%
-    filter(Line == "value_cod")
-  min_cod_y <- min(min_cod_y$value, na.rm=T) - max(25, as.numeric(dino_silho[1, "adjust"]))
+    group_by(x %/% 50) %>% 
+    mutate(min_cod_y_value = min(value)) %>% 
+    ungroup() %>% 
+    select(Line, x, min_cod_y_value) %>% 
+    mutate(min_cod_y_value = floor(min_cod_y_value - 25 + as.numeric(dino_silho[1, "adjust"])))
   
   dino_silho3 <- dino_silho2 %>% 
-    filter(!(Line == "value_cod" & y < min_cod_y)) %>% 
+    left_join(min_cod_y, by = c("Line", "x")) %>% 
+    #fill(min_cod_y_value) %>% 
+    filter(!(Line == "value_cod" & y < min_cod_y_value)) %>% 
     bind_rows(dino_silho2 %>%
-                filter((Line == "value_act" & y < min_cod_y)) %>%
+                left_join(min_cod_y, by = c("Line", "x")) %>% 
+                filter((Line == "value_act" & y < min_cod_y_value)| is.na(min_cod_y_value)) %>%
                 mutate(Line = "value_cod", Chart = "Datasaur")) %>%
+    mutate(y = floor(y)) %>% 
     arrange(x, Line, desc(y))
   
   #RETURN
   dino_silho_out <- dino_silho3 %>% 
     select(Chart, Line, x, y)
-  
+
   out.list <- list(
     datasaur_name = dino_name,
     corrs = corrs,
@@ -674,7 +700,6 @@ skin_datasaur <- function(naked_datasaur, color_pattern){
 }
 
 #Plot the datasaur
-
 plot_datasaur <- function(skin_datasaur0){
   
   #Features
@@ -688,9 +713,20 @@ plot_datasaur <- function(skin_datasaur0){
   sel_color       <- skin_datasaur0$color
   
   #Details
-  dino_info <- read.csv("BotInputs/DatasaurList.csv", stringsAsFactors = F)
+  dino_info <- read.csv("BotInputs/DatasaurList.csv", stringsAsFactors = FALSE)
   info <- dino_info %>% 
     filter(Fauna == datasaur_name)
+  
+  if(!is.na(info$Twitter[1]) & info$Twitter[1] != ""){
+    artist_twitter <- paste0("@", as.character(info$Twitter[1]), "")
+  } else {
+    artist_twitter <- NULL
+  }
+  
+  
+  map_cod_detail <- read.csv("CoD/map_cod_detail.csv", stringsAsFactors = FALSE)
+  corrs <- corrs %>% 
+    left_join(map_cod_detail, by = "Detail")
   
   #Annual X labels... 
   xlabs <- line_chart_data %>% 
@@ -707,19 +743,22 @@ plot_datasaur <- function(skin_datasaur0){
                 aes(x=x, y=y), fill = "#cccccc")+
     geom_line(size = 1.5) +
     scale_color_manual(values = c("value_cod" = "#FC3D32", "value_act" = sel_color[1])) + 
-    coord_equal(expand=FALSE) +
+    coord_equal(expand=TRUE) +
     scale_y_continuous(limits=c(0, NA), breaks = NULL) +
     scale_x_continuous(labels = xlabs$YM, breaks = xlabs$x, name = NULL) +
+    labs(caption = "Source: CDC.gov") +
     theme_minimal() +
     theme(legend.position = "none",
           panel.grid.major.y = element_blank(),
           panel.grid.minor.y = element_blank(),
           strip.background = element_blank(),
           strip.text = element_text(color="white", size = 12),
-          axis.text.x = element_text(angle = 45),
+          axis.text.x = element_text(angle = 45, hjust=1, color = "black"),
           axis.title.y = element_blank(),
           plot.title = element_text(size = 20, face="bold.italic"),
-          plot.background = element_rect(fill = "#FFFFFF", color = "#FFFFFF")
+          plot.background = element_rect(fill = "#FFFFE0", color = "#FFFFE0"),
+          panel.background = element_rect(fill = "white", color = sel_color[1]),
+          plot.caption = element_text(color = "#00436b")
     )
   
   main_chart <- ggplot(line_chart_data, 
@@ -731,21 +770,21 @@ plot_datasaur <- function(skin_datasaur0){
                 aes(x=x, y=y, alpha = alpha), fill = "#111111")+
     scale_alpha_identity() +
     scale_y_continuous(limits=c(0, NA), breaks = NULL) +
-    coord_equal() +
-    # labs(title = paste0(dino_name),
-    #      caption = paste(dino_name, "by", as.character(info$Credit[1]), 
-    #                      "| Cause of death data from CDC.gov", "\n", "@Datasaurs v1.0.0")) +
+    coord_equal(expand = FALSE) +
+    labs(caption = paste(datasaur_name, "by", as.character(info$Credit[1]),
+                         artist_twitter)) +
     theme_minimal() +
     theme(legend.position = "none",
           panel.grid.major.x = element_blank(),
           panel.grid.minor.x = element_blank(),
           panel.grid.major.y = element_blank(),
           panel.grid.minor.y = element_blank(),
-          plot.background = element_rect(fill = "#FFFFFF", color = "#FFFFFF"),
+          plot.background = element_blank(),
           axis.text.x = element_blank(),
           axis.title.x = element_blank(),
           axis.title.y = element_blank(),
-          plot.title = element_blank()
+          plot.title = element_blank(),
+          plot.caption = element_text(size = 11)
     )
   
   ##
@@ -755,30 +794,82 @@ plot_datasaur <- function(skin_datasaur0){
   #If chart isn't too long, inset goes next to datasaur
     #Lowest x that doesnt have <y in it
   
-  # if(max(line_chart_data$x, na.rm=TRUE) < 1.9*max(line_chart_data, na.rm=TRUE)){
-  #   lmat <- rbind(c(1, NA), c(2, 2))
-  # } else {
-  #   lmat <- rbind(c(1, 2), c(NA, 2))
-  # }
-  lmat <- rbind(c(1, NA), c(2, 2))
+  lng.x <- max(line_chart_data$x, na.rm=TRUE)
+  lng.y <- max(line_chart_data$value, na.rm=TRUE)
   
-    comb_chart <- grid.arrange(
-      grobs = list(inset_chart,
-                   main_chart),
-      widths = c(2, 1),
-      heights = c(1, 2),
-      layout_matrix = lmat,
-      top = textGrob(dino_name, gp=gpar(fontsize=20, fontface = "bold"), 
-                     x = 0, just = "left"),
-      left = paste0("US Cause of Death:", "\n", 
-                    wrapper(as.character(corrs[1, "Series"]), 50), "\n",
-                    " (", as.character(corrs[1, "Detail"]), ")"),
-      bottom = textGrob(paste(dino_name, "by", as.character(info$Credit[1]), 
-                     "| Cause of death data from CDC.gov", "\n", "@Datasaurs v1.0.0"),
-                     x = 1, just = "right")
-    )
+  ratio.xy <- lng.x / lng.y
   
+  if(lng.x < 2.1*lng.y){
+    lmat <- rbind(c(2, 3), c(1, 3))
+    lwdth <- c(1, 2)
+    lhgt  <- c(4/3, 3)
+  } else {
+    #Long charts - inset on top
+    lmat <- rbind(c(1, 2), c(3, 3))
+    lwdth <- c(2, 1)
+    lhgt  <- c(4/3, 2)
+  }
   
-  return(comb_chart)
+
+  cod_details <- arrangeGrob(
+    grobs = list(
+      #Corrlations
+      textGrob(paste0(round(as.numeric(corrs[1, "cor"])*100, 0), "% "),
+               gp = gpar(fontsize=24, fontface = "bold", col = "#FC3D32"),
+               x = unit(0, "npc"), y = unit(.9, "npc"),
+               just ="left"
+               ),
+      textGrob(wrapper(paste("correlation with U.S. deaths by",
+                              as.character(corrs[1, "Series"]), 
+                              "in", as.character(corrs[1, "Detail_print"])), 32),
+                gp = gpar(fontsize=16, col = "#00436b"),
+                x = unit(0, "npc"), y = unit(.8, "npc"),
+                just ="left")
+      ),
+    nrow = 2,
+    heights = c(1, 2),
+    top = " ", 
+    bottom = " ", 
+    left = " ",
+    clip = "off"
+  )
+  
+
+  #Save Chart
+  twit.width  <- 1024 #pixels
+  twit.height <-512 #pixels
+  twit.dpi <- 300
+  
+  plot.file <- paste0("BotRuns/v1p0 ", substr(Sys.time(), 1, 13),".png")
+
+  png(filename = plot.file,
+      bg = "#FFFFE0",
+      width = (twit.width)/1.25, height = (twit.height*1.25)/1.25)
+  
+    grid.arrange(
+        grobs = list(arrangeGrob(inset_chart), 
+                     cod_details,
+                     main_chart),
+        widths = lwdth,
+        heights = lhgt,
+        clip = "on",
+        layout_matrix = lmat,
+        top = textGrob(paste0(datasaur_name), 
+                       gp=gpar(col = "#00436b", fontsize=28, fontface = "bold"), 
+                       x = 0, just = "left"),
+        bottom = textGrob(paste("@Datasaurs v1.0.0"),
+                       gp = gpar(fontsize = 13, fontface = "bold",
+                                 col = "#00436b"),
+                       x = 1, just = "right"),
+        left = " ", right = " "
+      )
+    dev.off()#End print
+  
+    out.list <- c(skin_datasaur0,
+                  list(
+                    filename = plot.file
+                  ))
+  
+  return(out.list)
 }
 
