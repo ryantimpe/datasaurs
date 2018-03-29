@@ -592,6 +592,103 @@ skin_datasaur <- function(naked_datasaur, color_pattern){
                            width = stripe_radius, direction = stripe_direction)
      
    }
+   if(pattern == "zebra"){
+     stripe_radius <- sample(seq(80, 200, 5), 1)
+     
+     wave_length <- sample(seq(200, 500, 50), 1)
+     
+     wave_color <- sample(c(sel_color[1], "#00436b", "#cccccc"), 1, prob = c(10, 4, 2))
+     
+     skin_1 <- naked_0 %>% 
+       select(Line, Chart, x, y) %>% 
+       mutate(stripe_direction = (abs(((x-1) %% wave_length) - wave_length/2) - wave_length/4) / (wave_length/12)) %>% 
+       mutate(stripe_cat = (x + stripe_direction*y) %/% stripe_radius + 1) %>% 
+       mutate(stripe_rank = stripe_cat %% 3) %>%
+       mutate(color = case_when(
+         Chart == " Original" ~ "#CCCCCC",
+         stripe_rank == 0 ~ sel_color[1],
+         stripe_rank == 1 ~ sel_color[2],
+         stripe_rank == 2 ~ wave_color,
+         TRUE ~ "#CCCCCC"
+       )) 
+     
+     #Save pattern details
+     pattern_specs <- list(pattern = "waved", 
+                           width = stripe_radius, wave_length = wave_length)
+     
+   }
+   if(pattern == "celebrate"){
+
+     sel_color <- c("#9affd0", #Aqua
+                     "#ffb5f5", #Pink
+                     "#5384ff", #Blue
+                     "#ff9e53", #Orange
+                     "#ffed89", #Yellow
+                     #"#de89ff", #Purple
+                     #"#00436b", #RT blue
+                     "#ff6141", #Red/Orange
+                     "#ff25ab" #Bright pink
+     )
+     sel_color <- sample(sel_color, length(sel_color), replace = FALSE)
+     
+     group_radius <- sample(seq(50, 150, 5), 1)
+     dot_sizes <- sample(1:5, 1)
+     dot_radius <- sample(seq(20, 50), dot_sizes)/100
+     
+     skin_1 <- naked_0 %>% 
+       select(Line, Chart, x, y) %>% 
+       mutate(group_x = x %/% group_radius, 
+              group_y = y %/% group_radius) %>% 
+       rowwise() %>% 
+       mutate(group_color = sample(2:(length(sel_color)), 1)) %>% 
+       ungroup() %>% 
+       group_by(Chart, group_x, group_y) %>% 
+       mutate(p_dot  = (group_x + group_y) %% dot_sizes,
+              n_dot = n(),
+              x_mid = median(x, na.rm=TRUE), 
+              y_mid = median(y, na.rm=TRUE),
+              group_color = first(group_color)) %>% 
+       mutate(p_dist = ((x-x_mid)^2 + (y-y_mid)^2)^(1/2)) %>% 
+       ungroup() %>% 
+       mutate(dot = dot_radius[p_dot+1]*group_radius*n_dot/max(n_dot)) %>% 
+       mutate(spiral = sin(((x-x_mid)^2 + (y-y_mid)^2)^(1/2))) %>% 
+       mutate(color = case_when(
+         Chart == " Original" ~ "#CCCCCC",
+         p_dist <  dot & spiral < 0 ~ sel_color[group_color],
+         p_dist <  dot & spiral >= 0 ~ sel_color[1],
+         p_dist >= dot ~ sel_color[1],
+         TRUE ~ "#CCCCCC"
+       )) 
+     
+     #Alpha parameters
+     y_weight <- sample(2:10, 1)
+     radius_overflow <- 1+runif(1, 0.05, 0.30)
+     radius_overflow <- 1
+     x_offset <- round(runif(1, -group_radius, group_radius)/10)
+     y_offset <- round(runif(1, -group_radius, group_radius)/10)
+     
+     shadowed_2 <- skin_1 %>% 
+       filter(Chart == "Datasaur") %>% 
+       mutate(m_n_dot = max(n_dot)) %>% 
+       group_by(Chart, group_x, group_y) %>% 
+       mutate(in_circle = p_dist <  (dot_radius[p_dot+1]*group_radius*n_dot/m_n_dot)*radius_overflow) %>% 
+       mutate(alpha = case_when(
+         in_circle ~ ((x-median(x)+x_offset)^2 + (y-median(y)+y_offset)^2)^(1/2),
+         TRUE ~ 0
+       )) %>% 
+       ungroup() %>% 
+       mutate(alpha = case_when(
+         !in_circle ~ 1 - (x+y_weight*y)/(max(x)+y_weight*max(y)),
+         TRUE ~ alpha^(3/2)
+       )) %>% 
+       group_by(in_circle) %>% 
+       mutate(alpha = alpha / max(alpha, na.rm=TRUE) * 0.8) %>% 
+       ungroup()
+     
+     #Save pattern details
+     pattern_specs <- list(pattern = "celebrate")
+     
+   }
    if(pattern == "diamond"){
      dot_radius <- sample(seq(10, 40, 2), 1)
      dot_radius2 <- sample(seq(10, 40, 2), 1)
@@ -881,7 +978,7 @@ skin_datasaur <- function(naked_datasaur, color_pattern){
    ###
    # Alpha layer ----
    ###
-   if(!(pattern %in% c("3dotted"))){
+   if(!(pattern %in% c("3dotted", "celebrate"))){
      sel_alpha <- sample(2:9, 1)/10
      sel_alpha_y <- sample(5:10, 1) #increase minimum to reduce jump-off points
 
@@ -929,6 +1026,9 @@ plot_datasaur <- function(skin_datasaur0){
   line_chart_data <- skin_datasaur0$line_chart_data
   corrs           <- skin_datasaur0$corrs
   sel_color       <- skin_datasaur0$color
+  pattern         <- skin_datasaur0$pattern
+  
+  tweet_number <- pattern$next_tweet
   
   #Details
   dino_info <- read.csv("BotInputs/DatasaurList.csv", stringsAsFactors = FALSE)
@@ -1004,6 +1104,14 @@ plot_datasaur <- function(skin_datasaur0){
           plot.caption = element_text(size = 12)
     )
   
+  #Celebration text
+  if(tweet_number %% 500 == 0){
+    main_chart <- main_chart +
+      geom_label(x = 10, y = 40, hjust = 0,
+                size = 10, color = "#9affd0", fill = "#00436b",
+                label = paste0(tweet_number, "th Datasaur! "))
+  }
+  
   ##
   #Create combined chart
   ##
@@ -1054,7 +1162,7 @@ plot_datasaur <- function(skin_datasaur0){
 
   #Save Chart
   twit.width  <- 1024 #pixels
-  twit.height <-512 #pixels
+  twit.height <- 512 #pixels
   twit.dpi <- 300
   
   plot.file <- paste0("BotRuns/v1p0 ", substr(Sys.time(), 1, 13),".png")
@@ -1074,7 +1182,7 @@ plot_datasaur <- function(skin_datasaur0){
         top = textGrob(paste0(datasaur_name), 
                        gp=gpar(col = "#00436b", fontsize=28, fontface = "bold"), 
                        x = 0, just = "left"),
-        bottom = textGrob(paste("@Datasaurs v1.0.1"),
+        bottom = textGrob(paste0("#", tweet_number, " | ", "@Datasaurs v1.0.2"),
                        gp = gpar(fontsize = 13, fontface = "bold",
                                  col = "#00436b"),
                        x = 1, just = "right"),

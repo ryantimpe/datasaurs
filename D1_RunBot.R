@@ -16,16 +16,6 @@ source("D1_ColorsPatterns.R")
 
 #Datasaur function will go here...
 
-datasaur <- sample(dino_info$Fauna, 1) %>% 
-  naked_datasaur() %>% 
-  skin_datasaur(choose_pattern()) %>% 
-  plot_datasaur() %>% 
-  text_datasaur()
-
-###
-#TWEET IT!
-###
-
 # Set up Twitter API
 api_keys <- read.csv("BotInputs/API.csv", stringsAsFactors = FALSE)
 
@@ -33,6 +23,25 @@ setup_twitter_oauth(consumer_key = api_keys$consumer_key,
                     consumer_secret = api_keys$consumer_secret,
                     access_token = api_keys$access_token,
                     access_secret = api_keys$access_secret)
+
+
+#Check for a special tweet count and set a pattern for that...
+# I'd like this to be in the choose_pattern() function, but probably should keep API stuff here
+tweet_data <- getUser("Datasaurs")
+#2 non-datasaur tweets, +1 for this tweet
+next_tweet_number <- (tweet_data$getStatusesCount() - 2 + 1) 
+
+next_tweet_number <- 1500
+
+datasaur <- sample(dino_info$Fauna, 1) %>% 
+  naked_datasaur() %>% 
+  skin_datasaur(next_tweet_number %>% choose_pattern) %>% 
+  plot_datasaur() %>% 
+  text_datasaur()
+
+###
+#TWEET IT!
+###
 
 updateStatus(datasaur$twitter_text, mediaPath = datasaur$filename, 
              bypassCharLimit=T)
