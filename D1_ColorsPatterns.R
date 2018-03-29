@@ -1,11 +1,11 @@
 # Choose Pattern / Colors
-choose_pattern <- function(col1_set = NULL, col2_set = NULL, 
+choose_pattern <- function(tweet_num, col1_set = NULL, col2_set = NULL, 
                            pattern_set = NULL){
   
   #Get list of allowed color categories and color hexes
   colorChoices <- read.csv("BotInputs/Colors.csv", stringsAsFactors = F)
   col_list <- unique(colorChoices$Category)
-  
+
   ###
   #Choose color types  
   ### 
@@ -28,20 +28,27 @@ choose_pattern <- function(col1_set = NULL, col2_set = NULL,
   ###
   #Pattern!
   ###
-  
+
   pattern_list <- c("spotted" = 40, 
                     "striped" = 20, 
-                    "geometric" = 20, 
+                    "geometric" = 15, 
                     "dotted" = 20, 
                     "3dotted" = 30,
                     "diamond" = 20,
+                    "zebra" = 10,
                     "hearts" = 1, #Rare except valentines day,
                     "rainbow" = 0.1, #Super rare except for June... then less rare
-                    "america" = 0.1 #Super rare except for US patriotic holidays
+                    "america" = 0.1, #Super rare except for US patriotic holidays
+                    "celebrate" = 0.0001 #Super rare except valentines day,
   )
   
-  if(!is.null(pattern_set) && pattern_set %in% names(pattern_list)){
-    pattern <- pattern_set
+  #Every 500 images, use celebrate
+  if(next_tweet_number %% 500 == 0){
+    pattern_tweet <- "celebrate"
+  } else { pattern_tweet <- pattern_set}
+  
+  if(!is.null(pattern_tweet) && pattern_tweet %in% names(pattern_list)){
+    pattern <- pattern_tweet
   } else{
     pattern <- sample(names(pattern_list), 1, prob = pattern_list)
   }
@@ -56,13 +63,15 @@ choose_pattern <- function(col1_set = NULL, col2_set = NULL,
       
       pattern_list <- c("spotted" = 10, 
                         "striped" = 40, 
-                        "geometric" = 20, 
+                        "geometric" = 10, 
                         "dotted" = 20, 
                         "3dotted" = 40,
                         "diamond" = 40,
+                        "zebra" = 20,
                         "hearts" = 5,
                         "rainbow" = 0,
-                        "america" = 0
+                        "america" = 0,
+                        "celebrate" = 0
       )
       pattern <- sample(names(pattern_list), 1, prob = pattern_list)
     }
@@ -151,6 +160,7 @@ choose_pattern <- function(col1_set = NULL, col2_set = NULL,
   pattern_out <- list(
     col1 = col1, col2 = col2,
     pattern = pattern,
+    next_tweet = next_tweet_number,
     holidatasaur = holidatasaur, americasaur = americasaur,
     newyearsaur = newyearsaur, valentinesaur = valentinesaur, 
     stpatrick = stpatrick, pridesaur = pridesaur
