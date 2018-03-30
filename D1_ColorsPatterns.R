@@ -21,7 +21,7 @@ choose_pattern <- function(tweet_num, col1_set = NULL, col2_set = NULL,
   if(!is.null(col2_set) && col2_set %in% col_list){
     col2 <- col2_set
   } else{
-    col2_list <- c("Green" = 95, "Blue" = 5, "Gold" = 3, "Dark" = 2)
+    col2_list <- c("Green" = 95, "Blue" = 5, "Gold" = 3, "Miami" = 3, "Dark" = 2)
     col2 <- sample(names(col2_list), 1, prob = col2_list)
   }
   
@@ -29,13 +29,14 @@ choose_pattern <- function(tweet_num, col1_set = NULL, col2_set = NULL,
   #Pattern!
   ###
 
-  pattern_list <- c("spotted" = 40, 
+  pattern_list <- c("spotted" = 30, 
                     "striped" = 20, 
-                    "geometric" = 15, 
+                    "geometric" = 10, #Retiring in favor of Zebra
                     "dotted" = 20, 
                     "3dotted" = 30,
                     "diamond" = 20,
-                    "zebra" = 10,
+                    "zebra" = 20,
+                    "stars" = 5, 
                     "hearts" = 1, #Rare except valentines day,
                     "rainbow" = 0.1, #Super rare except for June... then less rare
                     "america" = 0.1, #Super rare except for US patriotic holidays
@@ -66,8 +67,9 @@ choose_pattern <- function(tweet_num, col1_set = NULL, col2_set = NULL,
                         "geometric" = 10, 
                         "dotted" = 20, 
                         "3dotted" = 40,
-                        "diamond" = 40,
+                        "diamond" = 30,
                         "zebra" = 20,
+                        "stars" = 40,
                         "hearts" = 5,
                         "rainbow" = 0,
                         "america" = 0,
@@ -109,6 +111,8 @@ choose_pattern <- function(tweet_num, col1_set = NULL, col2_set = NULL,
                         "3dotted" = 40,
                         "diamond" = 40,
                         "hearts" = 15,
+                        "zebra" = 15,
+                        "stars" = 50,
                         "rainbow" = 0,
                         "america" = 0
       )
@@ -124,10 +128,10 @@ choose_pattern <- function(tweet_num, col1_set = NULL, col2_set = NULL,
     if(valentine_red == "back"){
       col1 <- "Red"
       
-      col2_list <- c("Red" = 10, "Blue" = 2, "Gold" = 10, "Dark" = 5)
+      col2_list <- c("Red" = 10, "Blue" = 2, "Gold" = 10, "Dark" = 5, "Miami" = 5)
       col2 <- sample(names(col2_list), 1, prob = col2_list)
     } else {
-      col1_list <- c("Green" = 10, "Gold" = 5, "Dark" = 5)
+      col1_list <- c("Green" = 10, "Gold" = 5, "Dark" = 5, "Miami" = 5)
       col1 <- sample(names(col1_list), 1, prob = col1_list)
       
       col2 <- "Red"

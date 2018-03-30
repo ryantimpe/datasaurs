@@ -31,11 +31,9 @@ tweet_data <- getUser("Datasaurs")
 #2 non-datasaur tweets, +1 for this tweet
 next_tweet_number <- (tweet_data$getStatusesCount() - 2 + 1) 
 
-next_tweet_number <- 1500
-
 datasaur <- sample(dino_info$Fauna, 1) %>% 
   naked_datasaur() %>% 
-  skin_datasaur(next_tweet_number %>% choose_pattern) %>% 
+  skin_datasaur(next_tweet_number %>% choose_pattern()) %>% 
   plot_datasaur() %>% 
   text_datasaur()
 
