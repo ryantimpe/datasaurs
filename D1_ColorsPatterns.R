@@ -1,5 +1,5 @@
 # Choose Pattern / Colors
-choose_pattern <- function(tweet_num, col1_set = NULL, col2_set = NULL, 
+choose_pattern <- function(next_tweet_number = 1, col1_set = NULL, col2_set = NULL, 
                            pattern_set = NULL){
   
   #Get list of allowed color categories and color hexes
@@ -21,7 +21,7 @@ choose_pattern <- function(tweet_num, col1_set = NULL, col2_set = NULL,
   if(!is.null(col2_set) && col2_set %in% col_list){
     col2 <- col2_set
   } else{
-    col2_list <- c("Green" = 95, "Blue" = 5, "Gold" = 3, "Miami" = 3, "Dark" = 2)
+    col2_list <- c("Green" = 96, "Blue" = 6, "Gold" = 3, "Miami" = 3, "Dark" = 2)
     col2 <- sample(names(col2_list), 1, prob = col2_list)
   }
   
@@ -30,22 +30,26 @@ choose_pattern <- function(tweet_num, col1_set = NULL, col2_set = NULL,
   ###
 
   pattern_list <- c("spotted" = 30, 
-                    "striped" = 20, 
+                    "striped" = 15, #Retiring in favor of Zebra
                     "geometric" = 10, #Retiring in favor of Zebra
-                    "dotted" = 20, 
+                    "dotted" = 15,  #Retiring in favor of 3dotted
                     "3dotted" = 30,
                     "diamond" = 20,
-                    "zebra" = 20,
-                    "stars" = 5, 
+                    "zebra" = 30,
                     "hearts" = 1, #Rare except valentines day,
                     "rainbow" = 0.1, #Super rare except for June... then less rare
                     "america" = 0.1, #Super rare except for US patriotic holidays
+                    "stars" = 0.0001, 
                     "celebrate" = 0.0001 #Super rare except valentines day,
   )
   
   #Every 500 images, use celebrate
   if(next_tweet_number %% 500 == 0){
     pattern_tweet <- "celebrate"
+  } else if(next_tweet_number %% 50 == 0){
+    pattern_tweet <- "stars"
+    col2_list <- c("Gold" = 3, "Miami" = 6)
+    col2 <- sample(names(col2_list), 1, prob = col2_list)
   } else { pattern_tweet <- pattern_set}
   
   if(!is.null(pattern_tweet) && pattern_tweet %in% names(pattern_list)){
