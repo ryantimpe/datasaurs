@@ -794,39 +794,80 @@ skin_datasaur <- function(naked_datasaur, color_pattern){
      
    }
    if(pattern == "america"){
-     star_radius <- 30
-     stripe_radius <- 25
      
-     sel_color <- c("#4040FF", "#FFDDDD", "#FFFFFF", "#FF4040")
+     america_type <- sample(c("flag", "fireworks"), 1)
      
-     skin_1 <- naked_0 %>% 
-       select(Line, Chart, x, y) %>% 
-       #Stars
-       mutate(star_cat = (x+y) %/% star_radius,
-              star_cat2 = (x - y) %/% star_radius) %>% 
-       mutate(star_rank = (star_cat * star_cat2) %% 2) %>%
-       mutate(color_star = case_when(
-         star_rank == 0 ~ sel_color[1],
-         star_rank == 1 ~ sel_color[3],
-         TRUE ~ "#CCCCCC"
-       )) %>% 
-       #Stripes
-       mutate(stripe_cat = y %/% stripe_radius,
-              stripe_rank = stripe_cat %% 2) %>% 
-       mutate(color_stripe = case_when(
-         stripe_rank == 0 ~ sel_color[4],
-         stripe_rank == 1 ~ sel_color[2],
-         TRUE ~ "#CCCCCC"
-       )) %>% 
-       #Stars & Stripes
-       mutate(color = case_when(
-         Chart == " Original" ~ "#CCCCCC",
-         x < max(x)/2.75 & y > max(y)/2 ~ color_star,
-         TRUE ~ color_stripe
-       ))
-
-     #Save pattern details
-     pattern_specs <- list(pattern = "america", radius = c(star_radius, stripe_radius))
+     if(america_type == "flag"){
+       star_radius <- 30
+       stripe_radius <- 25
+       
+       sel_color <- c("#4040FF", "#FFDDDD", "#FFFFFF", "#FF4040")
+       
+       skin_1 <- naked_0 %>% 
+         select(Line, Chart, x, y) %>% 
+         #Stars
+         mutate(star_cat = (x+y) %/% star_radius,
+                star_cat2 = (x - y) %/% star_radius) %>% 
+         mutate(star_rank = (star_cat * star_cat2) %% 2) %>%
+         mutate(color_star = case_when(
+           star_rank == 0 ~ sel_color[1],
+           star_rank == 1 ~ sel_color[3],
+           TRUE ~ "#CCCCCC"
+         )) %>% 
+         #Stripes
+         mutate(stripe_cat = y %/% stripe_radius,
+                stripe_rank = stripe_cat %% 2) %>% 
+         mutate(color_stripe = case_when(
+           stripe_rank == 0 ~ sel_color[4],
+           stripe_rank == 1 ~ sel_color[2],
+           TRUE ~ "#CCCCCC"
+         )) %>% 
+         #Stars & Stripes
+         mutate(color = case_when(
+           Chart == " Original" ~ "#CCCCCC",
+           x < max(x)/2.75 & y > max(y)/2 ~ color_star,
+           TRUE ~ color_stripe
+         ))
+       
+       #Save pattern details
+       pattern_specs <- list(pattern = "america - flag", radius = c(star_radius, stripe_radius))
+     } else {
+       group_radius <- sample(seq(40, 150, 5), 1)
+       dot_sizes <- sample(5:15, 1)
+       dot_radius <- sample(seq(25, 65), dot_sizes)/100
+       star_width <- 2
+       
+       sel_color <- c("#4040FF", "#FFFFFF", "#FF4040")
+       
+       skin_1 <- naked_0 %>% 
+         select(Line, Chart, x, y) %>% 
+         mutate(group_x = x %/% group_radius, 
+                group_y = y %/% group_radius) %>% 
+         group_by(Chart, group_x, group_y) %>% 
+         mutate(p_dot  = (group_x + group_y) %% dot_sizes,
+                n_dot = n(),
+                x_mid = median(x, na.rm=TRUE), 
+                y_mid = median(y, na.rm=TRUE)) %>% 
+         mutate(p_dist = ((x-x_mid)^2 + (y-y_mid)^2)^(1/2)) %>% 
+         ungroup() %>% 
+         mutate(dot = dot_radius[p_dot+1]*group_radius*n_dot/max(n_dot)) %>% 
+         group_by(Chart, group_x, group_y) %>% #Different colors for each firework
+         mutate(color = case_when(
+           Chart == " Original" ~ "#CCCCCC",
+           p_dist <  dot & abs(x-x_mid) <= star_width ~ sample(sel_color, 1),
+           p_dist <  dot & abs(y-y_mid) <= star_width ~ sample(sel_color, 1),
+           p_dist <  (3/4)*dot & abs((x-x_mid) + (y-y_mid)) <= star_width ~ sample(sel_color, 1),
+           p_dist <  (3/4)*dot & abs((x-x_mid) - (y-y_mid)) <= star_width ~ sample(sel_color, 1),
+           TRUE ~ "#000033" #Midnight blue
+         )) %>% 
+         ungroup()
+       
+       #Save pattern details
+       pattern_specs <- list(pattern = "america_fireworks", 
+                             group_radius = group_radius, 
+                             dot_sizes = dot_sizes, dot_radius = dot_radius)
+     }
+     
      
    }
    if(pattern == "rainbow"){
