@@ -1214,7 +1214,7 @@ plot_datasaur <- function(skin_datasaur0){
         top = textGrob(paste0(datasaur_name), 
                        gp=gpar(col = "#00436b", fontsize=28, fontface = "bold"), 
                        x = 0, just = "left"),
-        bottom = textGrob(paste0("#", tweet_number, " | ", "@Datasaurs v1.0.2"),
+        bottom = textGrob(paste0("#", tweet_number, " | ", "@Datasaurs v1.0.3"),
                        gp = gpar(fontsize = 13, fontface = "bold",
                                  col = "#00436b"),
                        x = 1, just = "right"),
@@ -1253,16 +1253,17 @@ text_datasaur <- function(plot_datasaur0){
                     " in ", as.character(corrs[1, "Detail_print"]), ".")
   
   #Hashtags!
-  hashes_list <- c("#rstats" = 5, 
+  hashes_list <- c("#rstats" = 1, "#ggplot" = 1,
                    "#dinosaurs" = 5, "#dinos" = 2, 
                    "#dataviz" = 5, "#dataisbeautiful" = 2, "#data" = 1,
                    "#machinelearning" = 3, "#datascience" = 4, "#analytics" = 1,
                    "#science" = 2, "#statistics" = 2,
                    "#paleontology" = 2, "#paleobiology" = 2, 
+                   "#sciart" = 2, "#paleoart" = 2,
                    "#bioinformatics" = 3,
                    "#themoreyouknow"= 1, "#lifefindsaway" = 1,
                    "#JurassicWorld" = 1, "#FallenKingdom" = 1,
-                   "#JurassicPark" = 1, "#JurassicPark25" = 1)
+                   "#JurassicPark" = 1)
   
   if(weekdays(Sys.Date()) == "Friday"){
     hashes_list <- c("#FossilFriday" = 40, #Very High Chance of #FossilFriday 
@@ -1280,8 +1281,8 @@ text_datasaur <- function(plot_datasaur0){
                            if(pattern$holidatasaur){" #Holidatasaur"}, 
                            if(pattern$america){" #Americasaur"},
                            if(pattern$valentinesaur){" #Valentinesaur"},
-                           if(pattern$stpatrick){" #StPaddatasaur"},
-                           if(pattern$pridesaur){" #PRIDEsaur"},
+                           if(pattern$stpatrick){" #StPatricksDays"},
+                           if(pattern$pridesaur){" #PRIDE"},
                            if(pattern$newyearsaur){paste(" #HappyNewYears", 
                                                          paste0(" #NY", lubridate::year(Sys.Date()+1)))} # +1 to account for NYE
     )
