@@ -1334,7 +1334,7 @@ text_datasaur <- function(plot_datasaur0){
   
   #Artist tags
   if(as.character(info[1, "Twitter"]) != "" && !is.na(info[1, "Twitter"]) &&
-     sample(c(TRUE, FALSE), 1, prob = c(1, 9))){
+     sample(c(TRUE, FALSE), 1, prob = c(1, 12))){
     text_twitter <- paste0("Image by @", as.character(info$Twitter[1]), ". ")
   } else {
     text_twitter <- ""
