@@ -1013,7 +1013,7 @@ skin_datasaur <- function(naked_datasaur, color_pattern){
     
   }
    if(pattern == "feathered"){
-     fthr_radius <- 5
+     fthr_radius <- 20
      group_radius <- sample(seq(50, 100, 5), 1)
      
      fthr_direction <- runif(1, -2, 2) #Negatives slope up, <1 is flatter, >1 is steeper

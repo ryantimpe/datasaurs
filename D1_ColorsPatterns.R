@@ -36,6 +36,7 @@ choose_pattern <- function(next_tweet_number = 1, col1_set = NULL, col2_set = NU
                     "3dotted" = 30,
                     "diamond" = 20,
                     "zebra" = 30,
+                    "feathered" = 0,
                     "hearts" = 1, #Rare except valentines day,
                     "rainbow" = 0.1, #Super rare except for June... then less rare
                     "america" = 0.1, #Super rare except for US patriotic holidays
