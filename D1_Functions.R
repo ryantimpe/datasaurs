@@ -1321,7 +1321,7 @@ text_datasaur <- function(plot_datasaur0){
                            #Additional hashtags
                            if(pattern$holidatasaur){" #Holidatasaur"}, 
                            if(pattern$america){" #Americasaur"},
-                           if(pattern$valentinesaur){" #Valentinesaur"},
+                           if(pattern$valentinesaur){" #ValentinesDay"},
                            if(pattern$stpatrick){" #StPatricksDays"},
                            if(pattern$pridesaur){" #PRIDE"},
                            if(pattern$newyearsaur){paste(" #HappyNewYears", 
