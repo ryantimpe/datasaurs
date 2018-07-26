@@ -31,7 +31,13 @@ tweet_data <- getUser("Datasaurs")
 #2 non-datasaur tweets, +1 for this tweet
 next_tweet_number <- (tweet_data$getStatusesCount() - 2 + 1) 
 
-datasaur <- sample(dino_info$Fauna, 1) %>% 
+dino <- if(months.Date(Sys.Date()) == "July" && lubridate::day(Sys.Date()) >= 25 && lubridate::day(Sys.Date()) <= 28){
+  "Carcharocles megalodon"
+} else {
+  sample(dino_info$Fauna, 1)
+}
+
+datasaur <- dino %>% 
   naked_datasaur() %>% 
   skin_datasaur(next_tweet_number %>% choose_pattern()) %>% 
   plot_datasaur() %>% 

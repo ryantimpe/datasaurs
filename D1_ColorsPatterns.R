@@ -165,6 +165,31 @@ choose_pattern <- function(next_tweet_number = 1, col1_set = NULL, col2_set = NU
     }
   }
   
+  # July --> Sharkweek! ----
+  sharkweek <- FALSE
+  if(months.Date(Sys.Date()) == "July" && lubridate::day(Sys.Date()) >= 25 && lubridate::day(Sys.Date()) <= 28){
+    sharkweek <- sample(c(TRUE, FALSE), 1, prob = c(1, 0))
+    if(sharkweek){
+      col1 <- "Blue"
+      col2 <- "Gold"
+      
+      pattern_list <- c("spotted" = 5, 
+                        "striped" = 40, 
+                        "geometric" = 10, 
+                        "dotted" = 20, 
+                        "3dotted" = 40,
+                        "diamond" = 30,
+                        "zebra" = 40,
+                        "stars" = 40,
+                        "hearts" = 20,
+                        "rainbow" = 0,
+                        "america" = 0,
+                        "celebrate" = 0
+      )
+      pattern <- sample(names(pattern_list), 1, prob = pattern_list)
+    }
+  }
+  
   #Return Pattern
   pattern_out <- list(
     col1 = col1, col2 = col2,
@@ -172,7 +197,7 @@ choose_pattern <- function(next_tweet_number = 1, col1_set = NULL, col2_set = NU
     next_tweet = next_tweet_number,
     holidatasaur = holidatasaur, americasaur = americasaur,
     newyearsaur = newyearsaur, valentinesaur = valentinesaur, 
-    stpatrick = stpatrick, pridesaur = pridesaur
+    stpatrick = stpatrick, pridesaur = pridesaur, sharkweek = sharkweek
   )
   return(pattern_out)
 }
