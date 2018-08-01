@@ -32,7 +32,10 @@ tweet_data <- getUser("Datasaurs")
 next_tweet_number <- (tweet_data$getStatusesCount() - 2 + 1) 
 
 dino <- if(months.Date(Sys.Date()) == "July" && lubridate::day(Sys.Date()) >= 25 && lubridate::day(Sys.Date()) <= 28){
-  "Carcharocles megalodon"
+  dino_info %>% 
+    filter(Family == "Shark") %>% 
+    pull(Fauna) %>% 
+    sample(1)
 } else {
   sample(dino_info$Fauna, 1)
 }
