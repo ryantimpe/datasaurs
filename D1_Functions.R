@@ -1301,9 +1301,10 @@ text_datasaur <- function(plot_datasaur0){
                    "#science" = 2, "#statistics" = 2,
                    "#paleontology" = 2, "#paleobiology" = 2, 
                    "#sciart" = 2, "#paleoart" = 2,
+                   "#museums" = 2,
                    "#bioinformatics" = 3,
                    "#themoreyouknow"= 1, "#lifefindsaway" = 1,
-                   "#JurassicWorld" = 1, "#FallenKingdom" = 1,
+                   #"#JurassicWorld" = 1, "#FallenKingdom" = 1,
                    "#JurassicPark" = 1)
   
   if(weekdays(Sys.Date()) == "Friday"){

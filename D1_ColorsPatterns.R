@@ -88,12 +88,14 @@ choose_pattern <- function(next_tweet_number = 1, col1_set = NULL, col2_set = NU
   # PRESIDENTS DAY, FLAG DAY, 4TH OF JULY, VETERANS DAY --> Americasaur ----
   americasaur_dates <- c("#PresidentsDay" = "2018-02-19", "#FlagDay" = "2018-06-14", 
                          "#IndependenceDay" = "2018-07-04", "#VeteransDay" = "2018-11-11",
+                         "#LaborDay" = "2018-09-3",
                          "#PresidentsDay" = "2019-02-18", "#FlagDay" = "2019-06-14", 
-                         "#IndependenceDay" = "2019-07-04", "#VeteransDay" = "2019-11-11"
+                         "#IndependenceDay" = "2019-07-04", "#VeteransDay" = "2019-11-11",
+                         "#LaborDay" = "2019-09-2"
   )
   americasaur <- FALSE
   if(as.character(Sys.Date()) %in% americasaur_dates){
-    americasaur <- sample(c(TRUE, FALSE), 1, prob = c(1, 0.25)) #75% chance on US patriot holidays
+    americasaur <- sample(c(TRUE, FALSE), 1, prob = c(1, 0.25)) #80% chance on US patriot holidays
     if(americasaur){pattern <- "america"}
   }
   
