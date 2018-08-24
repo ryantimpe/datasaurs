@@ -3,6 +3,7 @@ library(lubridate)
 library(scales)
 library(zoo)
 library(grid); library(gridExtra)
+library(rvest); library(tidytext)
 
 #Text wrapping function
 wrapper <- function(x, ...) {paste(strwrap(x, ...), collapse = "\n")}
@@ -1168,6 +1169,58 @@ skin_datasaur <- function(naked_datasaur, color_pattern){
   
 }
 
+
+#Get information from wikipedia
+wiki_datasaur <- function(skin_datasaur0){
+  
+  #Features
+  datasaur_name   <- skin_datasaur0$datasaur_name
+  corrs           <- skin_datasaur0$corrs
+  
+  map_cod_detail <- read.csv("CoD/map_cod_detail.csv", stringsAsFactors = FALSE)
+  corrs <- corrs %>% 
+    left_join(map_cod_detail, by = "Detail")
+  
+  #Details
+  dino_info <- read.csv("BotInputs/DatasaurList.csv", stringsAsFactors = FALSE)
+  info <- dino_info %>% 
+    filter(Fauna == datasaur_name)
+  
+  #Get Wiki url
+  dino_wiki <- gsub(" ", "_", datasaur_name, fixed = TRUE)
+  
+  wiki <- tryCatch(
+    read_html(paste0("https://en.wikipedia.org/wiki/", dino_wiki)),
+    error = function(e){NA}    # a function that returns NA regardless of what it's passed
+  ) 
+  
+  if(!is.na(wiki)){
+    wiki_all <- wiki %>% 
+      html_nodes("p") %>% 
+      html_text()
+    
+    #Clean text
+    wiki_note <- tibble(text = wiki_all) %>% 
+      filter(nchar(text) > 100) %>% 
+      mutate(text = gsub("\\[.*?\\]", "", text)) %>% 
+      unnest_tokens(sentence, text, token = "sentences", to_lower = FALSE) %>% 
+      filter(nchar(sentence) > 40) %>% 
+      sample_n(1) %>% 
+      pull(sentence)
+  } else {
+    wiki_note <- paste(datasaur_name, "did not actually cause", as.character(corrs[1, "Series"]))
+  }
+  
+  #Output
+  out.list <- c(skin_datasaur0,
+                list(
+                  wiki_note = wiki_note
+                ))
+  
+  return(out.list)
+  
+}
+
 #Plot the datasaur
 plot_datasaur <- function(skin_datasaur0){
   
@@ -1181,6 +1234,7 @@ plot_datasaur <- function(skin_datasaur0){
   corrs           <- skin_datasaur0$corrs
   sel_color       <- skin_datasaur0$color
   pattern         <- skin_datasaur0$pattern
+  wiki_note       <- skin_datasaur0$wiki_note
   
   tweet_number <- pattern$next_tweet
   
@@ -1432,9 +1486,11 @@ text_datasaur <- function(plot_datasaur0){
   #Output
   out.list <- c(plot_datasaur0,
                 list(
-                  twitter_text = text_final
+                  twitter_text = text_final,
+                  cod = paste0(as.character(corrs[1, "Series"]))
                 ))
   
   return(out.list)
 
 }
+
