@@ -1333,14 +1333,14 @@ plot_datasaur <- function(skin_datasaur0){
   ratio.xy <- lng.x / lng.y
   
   if(lng.x < 2.1*lng.y){
-    lmat <- rbind(c(2, 3), c(1, 3))
+    lmat <- rbind(c(2, 3), c(1, 3), c(4, 4))
     lwdth <- c(1, 2)
-    lhgt  <- c(4/3, 3)
+    lhgt  <- c(4/3, 3, 1)
   } else {
     #Long charts - inset on top
-    lmat <- rbind(c(1, 2), c(3, 3))
+    lmat <- rbind(c(1, 2), c(3, 3), c(4, 4))
     lwdth <- c(2, 1)
-    lhgt  <- c(4/3, 2)
+    lhgt  <- c(4/3, 2, 1)
   }
   
 
@@ -1367,13 +1367,39 @@ plot_datasaur <- function(skin_datasaur0){
     clip = "off"
   )
   
+  wiki_headers <- c("Did you know?" = 10, "FUN FACT!" = 3, "Trivia:" = 3,
+                    "The more you know..." = 2
+                    )
+  
+  wiki_fact <- arrangeGrob(
+    grobs = list(
+      #Correlations
+      textGrob(sample(names(wiki_headers), 1,  prob = wiki_headers),
+               gp = gpar(fontsize=18, fontface = "bold", col = "#FC3D32"),
+               x = unit(0, "npc"), y = unit(.9, "npc"),
+               just ="left"
+      ),
+      textGrob(#wrapper(paste(wiki_note, "[wikipedia.org]"), 112),
+               wrapper(paste(wiki_note), 112),
+               gp = gpar(fontsize=14, col = "#00436b"),
+               x = unit(0, "npc"), y = unit(.7, "npc"),
+               just ="left")
+    ),
+    nrow = 2,
+    heights = c(1, 2),
+    top = " ", 
+    bottom = " ", 
+    left = " ",
+    clip = "off"
+  )
+  
 
   #Save Chart
   twit.width  <- 1024 #pixels
-  twit.height <- 512 #pixels
+  twit.height <- 512+64 #pixels
   twit.dpi <- 300
   
-  plot.file <- paste0("BotRuns/v1p0 ", substr(Sys.time(), 1, 13),".png")
+  plot.file <- paste0("BotRuns/v1p1 ", substr(Sys.time(), 1, 13),".png")
 
   png(filename = plot.file,
       bg = "#FFFFE0",
@@ -1382,7 +1408,8 @@ plot_datasaur <- function(skin_datasaur0){
     grid.arrange(
         grobs = list(arrangeGrob(inset_chart), 
                      cod_details,
-                     main_chart),
+                     main_chart, 
+                     wiki_fact),
         widths = lwdth,
         heights = lhgt,
         clip = "on",
@@ -1390,7 +1417,7 @@ plot_datasaur <- function(skin_datasaur0){
         top = textGrob(paste0(datasaur_name), 
                        gp=gpar(col = "#00436b", fontsize=28, fontface = "bold"), 
                        x = 0, just = "left"),
-        bottom = textGrob(paste0("#", tweet_number, " | ", "@Datasaurs v1.0.3"),
+        bottom = textGrob(paste0("#", tweet_number, " | ", "@Datasaurs v1.1.0"),
                        gp = gpar(fontsize = 13, fontface = "bold",
                                  col = "#00436b"),
                        x = 1, just = "right"),

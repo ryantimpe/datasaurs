@@ -43,8 +43,7 @@ dino <- if(months.Date(Sys.Date()) == "July" && lubridate::day(Sys.Date()) >= 25
 datasaur <- dino %>% 
   naked_datasaur() %>% 
   skin_datasaur(next_tweet_number %>% choose_pattern()) %>% 
-  wiki_datasaur()
-
+  wiki_datasaur() %>% 
   plot_datasaur() %>% 
   text_datasaur()
 
