@@ -35,6 +35,7 @@ choose_pattern <- function(next_tweet_number = 1, col1_set = NULL, col2_set = NU
                     "dotted" = 15,  #Retiring in favor of 3dotted
                     "3dotted" = 30,
                     "diamond" = 20,
+                    "fuzzy" = 20,
                     "zebra" = 30,
                     "feathered" = 0,
                     "hearts" = 1, #Rare except valentines day,

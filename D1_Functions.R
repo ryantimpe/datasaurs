@@ -592,6 +592,87 @@ skin_datasaur <- function(naked_datasaur, color_pattern){
                            width = stripe_radius, direction = stripe_direction)
      
    }
+   if(pattern == "fuzzy"){
+    stripe_radius <- c(sample(seq(20, 40, 2), 1), sample(seq(2, 20, 1), 1), 
+                       sample(seq(20, 40, 2), 1), sample(seq(2, 20, 1), 1))
+    
+    sel_color[3] <- colorChoices %>% 
+      filter(Category %in% c("Blue", "Gold", "Red")) %>% 
+      filter(!(Shade %in% sel_color)) %>% 
+      select(Shade) %>% 
+      sample_n(1) %>% 
+      as.character()
+    
+    sel_color[4] <- colorChoices %>% 
+      filter(Category %in% c("Blue", "Gold", "Red")) %>%
+      filter(!(Shade %in% sel_color)) %>% 
+      select(Shade) %>% 
+      sample_n(1) %>% 
+      as.character()
+    
+    stripe_direction <- runif(1, -2, 2) #Negatives slope up, <1 is flatter, >1 is steeper
+    
+    skin_1 <- naked_0 %>% 
+      select(Line, Chart, x, y) %>% 
+      mutate(stripe_cat = (x + stripe_direction*y) %/% stripe_radius + 1) %>% 
+      mutate(stripe_rank = stripe_cat %% 4) %>%
+      mutate(color = case_when(
+        Chart == " Original" ~ "#CCCCCC",
+        stripe_rank == 0 ~ sel_color[1],
+        stripe_rank == 1 ~ sel_color[2],
+        stripe_rank == 2 ~ sel_color[3],
+        stripe_rank == 3 ~ sel_color[4],
+        TRUE ~ "#CCCCCC"
+      )) 
+    
+    #Save pattern details
+    pattern_specs <- list(pattern = "fuzzy", 
+                          width = stripe_radius, direction = stripe_direction)
+    
+   }
+   if(pattern == "plaid"){
+    pl_radius <- c(sample(seq(20, 40, 2), 1), sample(seq(2, 20, 1), 1), 
+                       sample(seq(20, 40, 2), 1), sample(seq(2, 20, 1), 1))
+    
+    sel_cat3 <- sample( c("Blue", "Gold", "Red"), 1)
+    sel_color[3] <- colorChoices %>% 
+      filter(Category %in% sel_cat3) %>% 
+      filter(!(Shade %in% sel_color)) %>% 
+      select(Shade) %>% 
+      sample_n(1) %>% 
+      as.character()
+    
+    sel_cat4 <- sample( c("Blue", "Gold", "Red"), 1)
+    sel_color[4] <- colorChoices %>% 
+      filter(Category %in% sel_cat4) %>%
+      filter(!(Shade %in% sel_color)) %>% 
+      select(Shade) %>% 
+      sample_n(1) %>% 
+      as.character()
+    
+    stripe_direction <- runif(1, -2, 2) #Negatives slope up, <1 is flatter, >1 is steeper
+    
+    skin_1 <- naked_0 %>% 
+      select(Line, Chart, x, y) %>% 
+      group_by(y) %>% 
+      mutate(group_x = as.numeric(unlist(1:4 %>% map(function(x){rep(x, pl_radius[x])})))) %>% 
+      ungroup() %>% 
+      group_by(x) %>% 
+      mutate(group_y = as.numeric(unlist(1:4 %>% map(function(x){rep(x, pl_radius[x])})))) %>% 
+      ungroup() %>% 
+      mutate(color = case_when(
+        Chart == " Original" ~ "#CCCCCC",
+        group_x == group_y ~ sel_color[1],
+        group_x < group_y ~ sel_color[2],
+        group_x > group_y ~ sel_color[3],
+        TRUE ~ "#CCCCCC"
+      )) 
+    
+    #Save pattern details
+    pattern_specs <- list(pattern = "plaid", 
+                          width = stripe_radius, direction = stripe_direction)
+    
+   }
    if(pattern == "zebra"){
      stripe_radius <- sample(seq(80, 200, 5), 1)
      
