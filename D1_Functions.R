@@ -1367,8 +1367,8 @@ plot_datasaur <- function(skin_datasaur0){
     clip = "off"
   )
   
-  wiki_headers <- c("Did you know?" = 10, "FUN FACT!" = 3, "Trivia:" = 3,
-                    "The more you know..." = 2
+  wiki_headers <- c("Did you know?" = 10, "FUN FACT!" = 3, "Trivia:" = 2,
+                    "The more you know..." = 4
                     )
   
   wiki_fact <- arrangeGrob(
