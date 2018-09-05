@@ -42,7 +42,8 @@ choose_pattern <- function(next_tweet_number = 1, col1_set = NULL, col2_set = NU
                     "rainbow" = 0.1, #Super rare except for June... then less rare
                     "america" = 0.1, #Super rare except for US patriotic holidays
                     "stars" = 0.0001, 
-                    "celebrate" = 0.0001 #Super rare except valentines day,
+                    "celebrate" = 0.0001, #Super rare except 500th
+                    "trippy" = 2 # rare except birthday
   )
   
   #Every 500 images, use celebrate
@@ -193,6 +194,15 @@ choose_pattern <- function(next_tweet_number = 1, col1_set = NULL, col2_set = NU
     }
   }
   
+  # September --> Anniversary! ----
+  anniversary <- FALSE
+  if(months.Date(Sys.Date()) == "September" && lubridate::day(Sys.Date()) == 6){
+    anniversary <- TRUE
+    if(holidatasaur){
+      anniversary <- "trippy"
+    }
+  }
+  
   #Return Pattern
   pattern_out <- list(
     col1 = col1, col2 = col2,
@@ -200,7 +210,8 @@ choose_pattern <- function(next_tweet_number = 1, col1_set = NULL, col2_set = NU
     next_tweet = next_tweet_number,
     holidatasaur = holidatasaur, americasaur = americasaur,
     newyearsaur = newyearsaur, valentinesaur = valentinesaur, 
-    stpatrick = stpatrick, pridesaur = pridesaur, sharkweek = sharkweek
+    stpatrick = stpatrick, pridesaur = pridesaur, sharkweek = sharkweek,
+    anniversary = anniversary
   )
   return(pattern_out)
 }

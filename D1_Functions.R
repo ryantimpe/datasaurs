@@ -1093,6 +1093,38 @@ skin_datasaur <- function(naked_datasaur, color_pattern){
     #Save pattern details
     pattern_specs <- list(pattern = "celebrate")
     
+   }
+   if(pattern == "trippy"){
+     sel_color <- c("#9affd0", #Aqua
+                    "#ffb5f5", #Pink
+                    "#5384ff", #Blue
+                    "#ff9e53", #Orange
+                    "#ffed89", #Yellow
+                    "#de89ff", #Purple
+                    "#00436b", #RT blue
+                    "#ff6141", #Red/Orange
+                    "#ff25ab" #Bright pink
+     )
+     sel_color_num <- sample(5:length(sel_color), 1)
+     sel_color <- sample(sel_color, sel_color_num, replace = FALSE)
+     
+     trip_size = sample(5:10, 1)*10
+     trip = sample(c("kinda", "very"), 1, prob = c(3, 1))
+     
+    skin_1 <- naked_0 %>% 
+      mutate(
+        xa = x/50, ya = y/50,
+        color_value = case_when(
+          trip == "kinda" ~ sin(xa+ya)*sin(xa-ya),
+          trip == "very"  ~ sin(sin(xa*(sin(ya) - cos(xa)))) - cos(cos(ya*(cos(xa) - sin(ya)))))
+      ) %>%
+      mutate(color_value2 = color_value + max(abs(color_value)),
+        color_group = color_value2 / max(abs(color_value2))) %>% 
+      mutate(color = cut(color_value, sel_color_num, labels = sel_color)) %>% 
+      select(-color_value, -color_value2)
+    
+    #Save pattern details
+    pattern_specs <- list(pattern = "trippy")
   }
    if(pattern == "feathered"){
      fthr_radius <- 20
@@ -1168,7 +1200,6 @@ skin_datasaur <- function(naked_datasaur, color_pattern){
   return(out.list)
   
 }
-
 
 #Get information from wikipedia
 wiki_datasaur <- function(skin_datasaur0){
@@ -1319,6 +1350,12 @@ plot_datasaur <- function(skin_datasaur0){
                 size = 10, color = "#9affd0", fill = "#00436b",
                 label = paste0(tweet_number, "th Datasaur! "))
   }
+  if(pattern$anniversary){
+    main_chart <- main_chart +
+      geom_label(x = 10, y = 40, hjust = 0,
+                 size = 9, color = "#00436b", fill = "#ff9e53",
+                 label = "1 year of Datasaurs!")
+  }
   
   ##
   #Create combined chart
@@ -1417,7 +1454,7 @@ plot_datasaur <- function(skin_datasaur0){
         top = textGrob(paste0(datasaur_name), 
                        gp=gpar(col = "#00436b", fontsize=28, fontface = "bold"), 
                        x = 0, just = "left"),
-        bottom = textGrob(paste0("#", tweet_number, " | ", "@Datasaurs v1.1.0"),
+        bottom = textGrob(paste0("#", tweet_number, " | ", "@Datasaurs v1.1.1"),
                        gp = gpar(fontsize = 13, fontface = "bold",
                                  col = "#00436b"),
                        x = 1, just = "right"),
@@ -1488,6 +1525,7 @@ text_datasaur <- function(plot_datasaur0){
                            if(pattern$stpatrick){" #StPatricksDays"},
                            if(pattern$pridesaur){" #PRIDE"},
                            if(pattern$sharkweek){" #SharkWeek"},
+                           if(pattern$anniversary){" #1stAnniversary"},
                            if(pattern$newyearsaur){paste(" #HappyNewYears", 
                                                          paste0(" #NY", lubridate::year(Sys.Date()+1)))} # +1 to account for NYE
     )
