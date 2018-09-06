@@ -198,8 +198,8 @@ choose_pattern <- function(next_tweet_number = 1, col1_set = NULL, col2_set = NU
   anniversary <- FALSE
   if(months.Date(Sys.Date()) == "September" && lubridate::day(Sys.Date()) == 6){
     anniversary <- TRUE
-    if(holidatasaur){
-      anniversary <- "trippy"
+    if(anniversary){
+      pattern <- "trippy"
     }
   }
   
