@@ -100,6 +100,10 @@ choose_pattern <- function(next_tweet_number = 1, col1_set = NULL, col2_set = NU
     americasaur <- sample(c(TRUE, FALSE), 1, prob = c(1, 0.25)) #80% chance on US patriot holidays
     if(americasaur){pattern <- "america"}
   }
+  if(next_tweet_number == 1776){
+    americasaur <- TRUE
+    pattern <- "america"
+  }
   
   
   # JANUARY / DECEMBER --> New Years datasaur ----
