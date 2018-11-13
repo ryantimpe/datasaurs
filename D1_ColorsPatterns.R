@@ -61,6 +61,31 @@ choose_pattern <- function(next_tweet_number = 1, col1_set = NULL, col2_set = NU
     pattern <- sample(names(pattern_list), 1, prob = pattern_list)
   }
   
+  # November --> Thanksgiving! ----
+  thanksgiving <- FALSE
+  if(Sys.Date() %in% c("2018-11-22", "2019-11-28", "2020-11-26")){
+    thanksgiving <- TRUE
+      col1 <- "Red"
+      col2 <- "Gold"
+      
+      pattern_list <- c("spotted" = 10, 
+                        "striped" = 15, #Retiring in favor of Zebra
+                        "geometric" = 10, #Retiring in favor of Zebra
+                        "dotted" = 15,  #Retiring in favor of 3dotted
+                        "3dotted" = 10,
+                        "diamond" = 20,
+                        "fuzzy" = 30,
+                        "zebra" = 30,
+                        "feathered" = 0,
+                        "hearts" = 25, #Rare except valentines day,
+                        "rainbow" = 0, #Super rare except for June... then less rare
+                        "america" = 0, #Super rare except for US patriotic holidays
+                        "stars" = 5, 
+                        "celebrate" = 0,
+                        "trippy" = 2 # rare except birthday
+      )
+      pattern <- sample(names(pattern_list), 1, prob = pattern_list)
+  }
   
   # DECEMBER --> Holidatasaurs! ----
   holidatasaur <- FALSE
@@ -207,12 +232,13 @@ choose_pattern <- function(next_tweet_number = 1, col1_set = NULL, col2_set = NU
     }
   }
   
-  #Return Pattern
+  #Return Pattern ----
   pattern_out <- list(
     col1 = col1, col2 = col2,
     pattern = pattern,
     next_tweet = next_tweet_number,
-    holidatasaur = holidatasaur, americasaur = americasaur,
+    holidatasaur = holidatasaur, thanksgiving = thanksgiving,
+    americasaur = americasaur,
     newyearsaur = newyearsaur, valentinesaur = valentinesaur, 
     stpatrick = stpatrick, pridesaur = pridesaur, sharkweek = sharkweek,
     anniversary = anniversary

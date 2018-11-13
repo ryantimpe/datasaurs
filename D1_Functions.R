@@ -1531,6 +1531,7 @@ text_datasaur <- function(plot_datasaur0){
                            if(pattern$stpatrick){" #StPatricksDays"},
                            if(pattern$pridesaur){" #PRIDE"},
                            if(pattern$sharkweek){" #SharkWeek"},
+                           if(pattern$thanksgiving){ "#HappyThanksgiving"}, 
                            if(pattern$anniversary){" #1stAnniversary"},
                            if(pattern$newyearsaur){paste(" #HappyNewYears", 
                                                          paste0(" #NY", lubridate::year(Sys.Date()+1)))} # +1 to account for NYE

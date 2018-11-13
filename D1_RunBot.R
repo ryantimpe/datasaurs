@@ -36,13 +36,15 @@ dino <- if(months.Date(Sys.Date()) == "July" && lubridate::day(Sys.Date()) >= 25
     filter(Family == "Shark") %>% 
     pull(Fauna) %>% 
     sample(1)
+} else if(Sys.Date() %in% c("2018-11-22", "2019-11-28", "2020-11-26")){
+  dino <- "Meleagris"
 } else {
   sample(dino_info$Fauna, 1)
 }
 
 datasaur <- dino %>% 
   naked_datasaur() %>% 
-  skin_datasaur(next_tweet_number %>% choose_pattern()) %>% 
+  skin_datasaur(next_tweet_number %>% choose_pattern(col1_set = "Red", col2_set = "Gold")) %>% 
   wiki_datasaur() %>% 
   plot_datasaur() %>% 
   text_datasaur()
