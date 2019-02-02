@@ -29,7 +29,7 @@ setup_twitter_oauth(consumer_key = api_keys$consumer_key,
 # I'd like this to be in the choose_pattern() function, but probably should keep API stuff here
 tweet_data <- getUser("Datasaurs")
 #2 non-datasaur tweets, +1 for this tweet
-next_tweet_number <- (tweet_data$getStatusesCount() - 4 + 1) 
+next_tweet_number <- (tweet_data$getStatusesCount() - 5 + 1) 
 
 dino <- if(months.Date(Sys.Date()) == "July" && lubridate::day(Sys.Date()) >= 25 && lubridate::day(Sys.Date()) <= 28){
   dino_info %>% 
@@ -44,7 +44,7 @@ dino <- if(months.Date(Sys.Date()) == "July" && lubridate::day(Sys.Date()) >= 25
 
 datasaur <- dino %>% 
   naked_datasaur() %>% 
-  skin_datasaur(next_tweet_number %>% choose_pattern(col1_set = "Red", col2_set = "Gold")) %>% 
+  skin_datasaur(next_tweet_number %>% choose_pattern()) %>% 
   wiki_datasaur() %>% 
   plot_datasaur() %>% 
   text_datasaur()
