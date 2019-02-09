@@ -1083,13 +1083,7 @@ plot_datasaur <- function(skin_datasaur0, version_num){
                  size = 9, color = "#00436b", fill = "#ff9e53",
                  label = "2 years of Datasaurs!")
   }
-  if(tweet_number == 1776){
-    main_chart <- main_chart +
-      geom_label(x = 10, y = 40, hjust = 0,
-                 size = 9, color = "#00436b", fill = "#ff4040",
-                 label = "1776!")
-  }
-  
+
   ##
   #Create combined chart
   ##
